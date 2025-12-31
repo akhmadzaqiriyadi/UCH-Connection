@@ -1,17 +1,15 @@
 import { Elysia } from 'elysia';
 import { swagger } from '@elysiajs/swagger';
-import { cors } from '@elysiajs/cors';
 
 const app = new Elysia()
-  .use(cors()) // Tambah CORS biar aman
-
-  // 1. Redirect Root ke Swagger (Tetap pakai slash biar aset loading)
+  // 1. Redirect Root ke Swagger (PAKAI ALAMAT LENGKAP HTTPS!)
+  // Ini memaksa browser loncat ke alamat aman, gak peduli server aslinya HTTP.
   .get('/', ({ set }) => {
     set.status = 301;
-    set.redirect = '/api/swagger/';
+    set.redirect = 'https://dev-apps.utycreative.cloud/api/swagger/';
   })
 
-  // 2. Group API
+  // 2. Group API (SISANYA SAMA SEPERTI TADI, JANGAN DIUBAH)
   .group('/api', (app) =>
     app
       .use(
@@ -34,14 +32,11 @@ const app = new Elysia()
               { name: 'health', description: 'Health check endpoints' },
             ],
           },
-          // --- PERBAIKAN UTAMA ADA DI SINI ---
-          // Kita paksa Scalar mengambil JSON di path yang benar
           scalarConfig: {
             spec: {
               url: '/api/swagger/json'
             }
           }
-          // -----------------------------------
         })
       )
       .get('/health', () => ({
