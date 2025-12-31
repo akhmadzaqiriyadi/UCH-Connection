@@ -2,30 +2,35 @@ import { Elysia } from 'elysia';
 import { swagger } from '@elysiajs/swagger';
 
 const app = new Elysia()
-  // 1. Redirect Halaman Depan (/) ke Swagger
-  // Karena Nginx dilewati, App harus redirect sendiri.
+  // 1. Redirect Root ke Swagger (Explicit status code)
   .get('/', ({ set }) => {
+    set.status = 301;
     set.redirect = '/api/swagger';
   })
 
-  // 2. Masukkan semua endpoint ke dalam Group "/api"
-  // Supaya rapi dan sesuai format yang kamu mau: domain.com/api/...
+  // 2. Group API
   .group('/api', (app) =>
     app
       .use(
         swagger({
-          path: '/swagger', // Akses Swagger di: /api/swagger
+          path: '/swagger',
           documentation: {
             info: {
               title: 'UCH Connection API',
               version: '1.0.0',
               description: 'API documentation for UCH Connection Elysia.js server',
             },
+            // --- BAGIAN INI PENTING BIAR SWAGGER GAK BLANK ---
+            servers: [
+              {
+                url: 'https://dev-apps.utycreative.cloud',
+                description: 'Production Server'
+              }
+            ],
+            // ------------------------------------------------
             tags: [
               { name: 'general', description: 'General endpoints' },
               { name: 'health', description: 'Health check endpoints' },
-              { name: 'greetings', description: 'Greeting endpoints' },
-              { name: 'echo', description: 'Echo endpoints' },
             ],
           },
         })
@@ -47,17 +52,7 @@ const app = new Elysia()
           summary: 'Personalized greeting',
         },
       })
-      .post('/echo', ({ body }) => ({
-        received: body,
-        timestamp: new Date().toISOString(),
-      }), {
-        detail: {
-          tags: ['echo'],
-          summary: 'Echo request body',
-        },
-      })
   )
-  // 3. LISTEN DI PORT 2201 (WAJIB SESUAI ADMIN)
   .listen(2201);
 
 console.log(
