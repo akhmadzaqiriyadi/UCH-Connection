@@ -1,11 +1,16 @@
 import { Elysia } from 'elysia';
 import { swagger } from '@elysiajs/swagger';
+import { cors } from '@elysiajs/cors'; // Opsional: Bagus buat jaga-jaga
 
 const app = new Elysia()
-  // 1. Redirect Root ke Swagger (Explicit status code)
+  // Tambahkan CORS biar browser gak rewel soal security (Opsional tapi recommended)
+  .use(cors())
+
+  // 1. Redirect Root ke Swagger (DENGAN SLASH DI UJUNG!)
   .get('/', ({ set }) => {
     set.status = 301;
-    set.redirect = '/api/swagger';
+    // PERUBAHAN PENTING: Tambah '/' di akhir string
+    set.redirect = '/api/swagger/'; 
   })
 
   // 2. Group API
@@ -20,14 +25,13 @@ const app = new Elysia()
               version: '1.0.0',
               description: 'API documentation for UCH Connection Elysia.js server',
             },
-            // --- BAGIAN INI PENTING BIAR SWAGGER GAK BLANK ---
+            // Pastikan URL server ini benar
             servers: [
               {
                 url: 'https://dev-apps.utycreative.cloud',
                 description: 'Production Server'
               }
             ],
-            // ------------------------------------------------
             tags: [
               { name: 'general', description: 'General endpoints' },
               { name: 'health', description: 'Health check endpoints' },
@@ -50,6 +54,15 @@ const app = new Elysia()
         detail: {
           tags: ['greetings'],
           summary: 'Personalized greeting',
+        },
+      })
+      .post('/echo', ({ body }) => ({
+        received: body,
+        timestamp: new Date().toISOString(),
+      }), {
+        detail: {
+          tags: ['echo'],
+          summary: 'Echo request body',
         },
       })
   )
