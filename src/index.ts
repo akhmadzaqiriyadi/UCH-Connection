@@ -58,7 +58,7 @@ const app = new Elysia()
       description: 'Echoes back the request body with a timestamp',
     },
   })
-  .listen(3000);
+  .listen(2201);
 
 
 console.log(
