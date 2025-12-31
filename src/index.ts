@@ -2,14 +2,25 @@ import { Elysia } from 'elysia';
 import { swagger } from '@elysiajs/swagger';
 
 const app = new Elysia()
-  // 1. Redirect Root ke Swagger (PAKAI ALAMAT LENGKAP HTTPS!)
-  // Ini memaksa browser loncat ke alamat aman, gak peduli server aslinya HTTP.
+  // --- JURUS PAMUNGKAS: HTML REDIRECT ---
+  // Kita kirim HTML beneran biar browser dipaksa pindah dari sisi client.
   .get('/', ({ set }) => {
-    set.status = 301;
-    set.redirect = 'https://dev-apps.utycreative.cloud/api/swagger/';
+    set.headers['Content-Type'] = 'text/html';
+    return `<!DOCTYPE html>
+    <html>
+      <head>
+        <title>Redirecting...</title>
+        <meta http-equiv="refresh" content="0; url=https://dev-apps.utycreative.cloud/api/swagger/" />
+      </head>
+      <body style="background: #111; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh;">
+        <p>Mengalihkan ke Swagger UI... 🚀</p>
+        <script>window.location.href = "https://dev-apps.utycreative.cloud/api/swagger/";</script>
+      </body>
+    </html>`;
   })
+  // --------------------------------------
 
-  // 2. Group API (SISANYA SAMA SEPERTI TADI, JANGAN DIUBAH)
+  // Group API (JANGAN DIUBAH, SUDAH BENAR)
   .group('/api', (app) =>
     app
       .use(
