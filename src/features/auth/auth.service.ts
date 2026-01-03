@@ -97,13 +97,10 @@ export class AuthService {
    */
   async refreshAccessToken(refreshToken: string, jwt: any): Promise<{ accessToken: string }> {
     try {
-      // Verify refresh token
-      const payload = await jwt.verify(refreshToken);
-      const userId = payload.userId;
-
-      // Check if refresh token exists in Redis
-      const exists = await refreshTokenService.exists(userId, refreshToken);
-      if (!exists) {
+      // Get userId from Redis using the opaque refresh token
+      const userId = await refreshTokenService.getUserId(refreshToken);
+      
+      if (!userId) {
         throw new Error('Invalid refresh token');
       }
 
@@ -132,7 +129,7 @@ export class AuthService {
    * Logout user
    */
   async logout(userId: string, refreshToken: string): Promise<void> {
-    await refreshTokenService.delete(userId, refreshToken);
+    await refreshTokenService.delete(refreshToken);
   }
 
   /**

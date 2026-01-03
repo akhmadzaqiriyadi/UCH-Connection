@@ -25,26 +25,23 @@ redis.on('error', (err) => {
 // Helper functions for refresh tokens
 export const refreshTokenService = {
   async save(userId: string, token: string, expiresIn: number): Promise<void> {
-    const key = `refresh_token:${userId}:${token}`;
+    const key = `refresh_token:${token}`;
     await redis.setex(key, expiresIn, userId);
   },
 
-  async exists(userId: string, token: string): Promise<boolean> {
-    const key = `refresh_token:${userId}:${token}`;
+  async exists(token: string): Promise<boolean> {
+    const key = `refresh_token:${token}`;
     const result = await redis.exists(key);
     return result === 1;
   },
 
-  async delete(userId: string, token: string): Promise<void> {
-    const key = `refresh_token:${userId}:${token}`;
-    await redis.del(key);
+  async getUserId(token: string): Promise<string | null> {
+    const key = `refresh_token:${token}`;
+    return await redis.get(key);
   },
 
-  async deleteAll(userId: string): Promise<void> {
-    const pattern = `refresh_token:${userId}:*`;
-    const keys = await redis.keys(pattern);
-    if (keys.length > 0) {
-      await redis.del(...keys);
-    }
+  async delete(token: string): Promise<void> {
+    const key = `refresh_token:${token}`;
+    await redis.del(key);
   },
 };
