@@ -8,7 +8,8 @@ export const himpunanController = new Elysia({ prefix: '/himpunan' })
 
   // List Himpunan
   .get('/', async ({ query }) => {
-    return await himpunanService.findAll(query.search);
+    const data = await himpunanService.findAll(query.search);
+    return { success: true, data };
   }, {
     query: t.Object({
       search: t.Optional(t.String())
@@ -24,16 +25,19 @@ export const himpunanController = new Elysia({ prefix: '/himpunan' })
               examples: {
                 success: {
                   summary: 'Success response',
-                  value: [
-                    {
-                      id: 'himpunan-1',
-                      nama: 'Himpunan Informatika',
+                  value: {
+                    success: true,
+                    data: [
+                      {
+                        id: 'himpunan-1',
+                        nama: 'Himpunan Informatika',
                       prodiId: 'prodi-1',
                       prodiName: 'Informatika',
                       deskripsi: 'Wadah mahasiswa informatika',
                       createdAt: '2024-01-01T00:00:00Z'
-                    }
-                  ]
+                      }
+                    ]
+                  }
                 }
               }
             }

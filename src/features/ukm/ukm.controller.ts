@@ -8,7 +8,8 @@ export const ukmController = new Elysia({ prefix: '/ukm' })
 
   // List UKM
   .get('/', async ({ query }) => {
-    return await ukmService.findAll(query.search);
+    const data = await ukmService.findAll(query.search);
+    return { success: true, data };
   }, {
     query: t.Object({
       search: t.Optional(t.String())
@@ -24,14 +25,17 @@ export const ukmController = new Elysia({ prefix: '/ukm' })
               examples: {
                 success: {
                   summary: 'Success',
-                  value: [
-                    {
-                      id: 'ukm-1',
-                      nama: 'UKM Olahraga',
+                  value: {
+                    success: true,
+                    data: [
+                      {
+                        id: 'ukm-1',
+                        nama: 'UKM Olahraga',
                       deskripsi: 'Unit kegiatan olahraga',
                       createdAt: '2024-01-01T00:00:00Z'
-                    }
-                  ]
+                      }
+                    ]
+                  }
                 }
               }
             }
