@@ -1,0 +1,746 @@
+{
+  "id": "818bf485-96d9-45b1-b344-e0058aff8c32",
+  "prevId": "fd76567c-f318-463f-8a1f-2e99fd5a08a6",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.dosen": {
+      "name": "dosen",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nip": {
+          "name": "nip",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fakultas_id": {
+          "name": "fakultas_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "jabatan": {
+          "name": "jabatan",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "no_hp": {
+          "name": "no_hp",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "dosen_user_id_users_id_fk": {
+          "name": "dosen_user_id_users_id_fk",
+          "tableFrom": "dosen",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "dosen_fakultas_id_fakultas_id_fk": {
+          "name": "dosen_fakultas_id_fakultas_id_fk",
+          "tableFrom": "dosen",
+          "tableTo": "fakultas",
+          "columnsFrom": [
+            "fakultas_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "dosen_nip_unique": {
+          "name": "dosen_nip_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "nip"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.fakultas": {
+      "name": "fakultas",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "kode": {
+          "name": "kode",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nama": {
+          "name": "nama",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "fakultas_kode_unique": {
+          "name": "fakultas_kode_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "kode"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.himpunan": {
+      "name": "himpunan",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "nama": {
+          "name": "nama",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "prodi_id": {
+          "name": "prodi_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "deskripsi": {
+          "name": "deskripsi",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "himpunan_prodi_id_prodi_id_fk": {
+          "name": "himpunan_prodi_id_prodi_id_fk",
+          "tableFrom": "himpunan",
+          "tableTo": "prodi",
+          "columnsFrom": [
+            "prodi_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.himpunan_members": {
+      "name": "himpunan_members",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "himpunan_id": {
+          "name": "himpunan_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "mahasiswa_id": {
+          "name": "mahasiswa_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "jabatan": {
+          "name": "jabatan",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "joined_at": {
+          "name": "joined_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "himpunan_members_himpunan_id_himpunan_id_fk": {
+          "name": "himpunan_members_himpunan_id_himpunan_id_fk",
+          "tableFrom": "himpunan_members",
+          "tableTo": "himpunan",
+          "columnsFrom": [
+            "himpunan_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "himpunan_members_mahasiswa_id_mahasiswa_id_fk": {
+          "name": "himpunan_members_mahasiswa_id_mahasiswa_id_fk",
+          "tableFrom": "himpunan_members",
+          "tableTo": "mahasiswa",
+          "columnsFrom": [
+            "mahasiswa_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.mahasiswa": {
+      "name": "mahasiswa",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nim": {
+          "name": "nim",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "prodi_id": {
+          "name": "prodi_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "angkatan": {
+          "name": "angkatan",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "no_hp": {
+          "name": "no_hp",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "mahasiswa_user_id_users_id_fk": {
+          "name": "mahasiswa_user_id_users_id_fk",
+          "tableFrom": "mahasiswa",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "mahasiswa_prodi_id_prodi_id_fk": {
+          "name": "mahasiswa_prodi_id_prodi_id_fk",
+          "tableFrom": "mahasiswa",
+          "tableTo": "prodi",
+          "columnsFrom": [
+            "prodi_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "mahasiswa_nim_unique": {
+          "name": "mahasiswa_nim_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "nim"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.prodi": {
+      "name": "prodi",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "kode": {
+          "name": "kode",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nama": {
+          "name": "nama",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fakultas_id": {
+          "name": "fakultas_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "prodi_fakultas_id_fakultas_id_fk": {
+          "name": "prodi_fakultas_id_fakultas_id_fk",
+          "tableFrom": "prodi",
+          "tableTo": "fakultas",
+          "columnsFrom": [
+            "fakultas_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "prodi_kode_unique": {
+          "name": "prodi_kode_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "kode"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.refresh_tokens": {
+      "name": "refresh_tokens",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "token": {
+          "name": "token",
+          "type": "varchar(500)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "refresh_tokens_user_id_users_id_fk": {
+          "name": "refresh_tokens_user_id_users_id_fk",
+          "tableFrom": "refresh_tokens",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "refresh_tokens_token_unique": {
+          "name": "refresh_tokens_token_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "token"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.ukm": {
+      "name": "ukm",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "nama": {
+          "name": "nama",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "deskripsi": {
+          "name": "deskripsi",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.ukm_members": {
+      "name": "ukm_members",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "ukm_id": {
+          "name": "ukm_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "mahasiswa_id": {
+          "name": "mahasiswa_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "jabatan": {
+          "name": "jabatan",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "joined_at": {
+          "name": "joined_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ukm_members_ukm_id_ukm_id_fk": {
+          "name": "ukm_members_ukm_id_ukm_id_fk",
+          "tableFrom": "ukm_members",
+          "tableTo": "ukm",
+          "columnsFrom": [
+            "ukm_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "ukm_members_mahasiswa_id_mahasiswa_id_fk": {
+          "name": "ukm_members_mahasiswa_id_mahasiswa_id_fk",
+          "tableFrom": "ukm_members",
+          "tableTo": "mahasiswa",
+          "columnsFrom": [
+            "mahasiswa_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.users": {
+      "name": "users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "password": {
+          "name": "password",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "full_name": {
+          "name": "full_name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "role",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "users_email_unique": {
+          "name": "users_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.role": {
+      "name": "role",
+      "schema": "public",
+      "values": [
+        "admin",
+        "dosen",
+        "mahasiswa",
+        "staff"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

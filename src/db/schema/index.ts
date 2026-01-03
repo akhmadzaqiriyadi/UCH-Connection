@@ -22,6 +22,7 @@ export const fakultas = pgTable('fakultas', {
   kode: varchar('kode', { length: 10 }).notNull().unique(),
   nama: varchar('nama', { length: 255 }).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
+  deletedAt: timestamp('deleted_at'),
 });
 
 // Prodi table
@@ -31,6 +32,7 @@ export const prodi = pgTable('prodi', {
   nama: varchar('nama', { length: 255 }).notNull(),
   fakultasId: uuid('fakultas_id').notNull().references(() => fakultas.id),
   createdAt: timestamp('created_at').defaultNow().notNull(),
+  deletedAt: timestamp('deleted_at'),
 });
 
 // Mahasiswa table
@@ -42,6 +44,7 @@ export const mahasiswa = pgTable('mahasiswa', {
   angkatan: integer('angkatan').notNull(),
   noHp: varchar('no_hp', { length: 20 }),
   createdAt: timestamp('created_at').defaultNow().notNull(),
+  deletedAt: timestamp('deleted_at'),
 });
 
 // Dosen table
@@ -53,6 +56,7 @@ export const dosen = pgTable('dosen', {
   jabatan: varchar('jabatan', { length: 100 }),
   noHp: varchar('no_hp', { length: 20 }),
   createdAt: timestamp('created_at').defaultNow().notNull(),
+  deletedAt: timestamp('deleted_at'),
 });
 
 // UKM table
@@ -61,6 +65,7 @@ export const ukm = pgTable('ukm', {
   nama: varchar('nama', { length: 255 }).notNull(),
   deskripsi: text('deskripsi'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
+  deletedAt: timestamp('deleted_at'),
 });
 
 // UKM Members table
@@ -79,6 +84,7 @@ export const himpunan = pgTable('himpunan', {
   prodiId: uuid('prodi_id').notNull().references(() => prodi.id),
   deskripsi: text('deskripsi'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
+  deletedAt: timestamp('deleted_at'),
 });
 
 // Himpunan Members table
