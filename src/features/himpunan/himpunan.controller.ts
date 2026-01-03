@@ -15,7 +15,7 @@ export const himpunanController = new Elysia({ prefix: '/himpunan' })
       search: t.Optional(t.String())
     }),
     detail: {
-      tags: ['Himpunan (Himpunan Mahasiswa)'],
+      tags: ['Himpunan'],
       summary: 'List All Himpunan',
       responses: {
         200: {
@@ -57,7 +57,7 @@ export const himpunanController = new Elysia({ prefix: '/himpunan' })
     return { success: true, data };
   }, {
     detail: {
-      tags: ['Himpunan (Himpunan Mahasiswa)'],
+      tags: ['Himpunan'],
       summary: 'Get Himpunan Detail',
       responses: {
         200: {
@@ -106,7 +106,7 @@ export const himpunanController = new Elysia({ prefix: '/himpunan' })
       deskripsi: t.Optional(t.String())
     }),
     detail: {
-      tags: ['Himpunan (Himpunan Mahasiswa)'],
+      tags: ['Himpunan'],
       summary: 'Create Himpunan',
       responses: {
         201: {
@@ -154,7 +154,7 @@ export const himpunanController = new Elysia({ prefix: '/himpunan' })
       deskripsi: t.Optional(t.String())
     }),
     detail: {
-      tags: ['Himpunan (Himpunan Mahasiswa)'],
+      tags: ['Himpunan'],
       summary: 'Update Himpunan',
       responses: {
         200: {
@@ -197,7 +197,7 @@ export const himpunanController = new Elysia({ prefix: '/himpunan' })
     return { success: true, message: 'Himpunan deleted successfully' };
   }, {
     detail: {
-      tags: ['Himpunan (Himpunan Mahasiswa)'],
+      tags: ['Himpunan'],
       summary: 'Delete Himpunan',
       responses: {
         200: {
@@ -231,7 +231,7 @@ export const himpunanController = new Elysia({ prefix: '/himpunan' })
     return { success: true, data: members };
   }, {
     detail: {
-      tags: ['Himpunan (Himpunan Mahasiswa)'],
+      tags: ['Himpunan'],
       summary: 'List Himpunan Members',
       responses: {
         200: {
@@ -280,7 +280,7 @@ export const himpunanController = new Elysia({ prefix: '/himpunan' })
       jabatan: t.Optional(t.String())
     }),
     detail: {
-      tags: ['Himpunan (Himpunan Mahasiswa)'],
+      tags: ['Himpunan'],
       summary: 'Add Member to Himpunan',
       responses: {
         201: {
@@ -317,7 +317,7 @@ export const himpunanController = new Elysia({ prefix: '/himpunan' })
     }
   }, {
     detail: {
-      tags: ['Himpunan (Himpunan Mahasiswa)'],
+      tags: ['Himpunan'],
       summary: 'Kick Member from Himpunan',
       responses: {
         200: {

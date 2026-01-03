@@ -15,7 +15,7 @@ export const ukmController = new Elysia({ prefix: '/ukm' })
       search: t.Optional(t.String())
     }),
     detail: {
-      tags: ['UKM (Unit Kegiatan Mahasiswa)'],
+      tags: ['UKM'],
       summary: 'List All UKM',
       responses: {
         200: {
@@ -55,7 +55,7 @@ export const ukmController = new Elysia({ prefix: '/ukm' })
     return { success: true, data };
   }, {
     detail: {
-      tags: ['UKM (Unit Kegiatan Mahasiswa)'],
+      tags: ['UKM'],
       summary: 'Get UKM Detail',
       responses: {
         200: {
@@ -101,7 +101,7 @@ export const ukmController = new Elysia({ prefix: '/ukm' })
       deskripsi: t.Optional(t.String())
     }),
     detail: {
-      tags: ['UKM (Unit Kegiatan Mahasiswa)'],
+      tags: ['UKM'],
       summary: 'Create UKM',
       responses: {
         201: {
@@ -146,7 +146,7 @@ export const ukmController = new Elysia({ prefix: '/ukm' })
       deskripsi: t.Optional(t.String())
     }),
     detail: {
-      tags: ['UKM (Unit Kegiatan Mahasiswa)'],
+      tags: ['UKM'],
       summary: 'Update UKM',
       responses: {
         200: {
@@ -187,7 +187,7 @@ export const ukmController = new Elysia({ prefix: '/ukm' })
     return { success: true, message: 'UKM deleted successfully' };
   }, {
     detail: {
-      tags: ['UKM (Unit Kegiatan Mahasiswa)'],
+      tags: ['UKM'],
       summary: 'Delete UKM',
       responses: {
         200: {
@@ -221,7 +221,7 @@ export const ukmController = new Elysia({ prefix: '/ukm' })
     return { success: true, data: members };
   }, {
     detail: {
-      tags: ['UKM (Unit Kegiatan Mahasiswa)'],
+      tags: ['UKM'],
       summary: 'List UKM Members',
       responses: {
         200: {
@@ -270,7 +270,7 @@ export const ukmController = new Elysia({ prefix: '/ukm' })
       jabatan: t.Optional(t.String())
     }),
     detail: {
-      tags: ['UKM (Unit Kegiatan Mahasiswa)'],
+      tags: ['UKM'],
       summary: 'Add Member to UKM',
       responses: {
         201: {
@@ -307,7 +307,7 @@ export const ukmController = new Elysia({ prefix: '/ukm' })
     }
   }, {
     detail: {
-      tags: ['UKM (Unit Kegiatan Mahasiswa)'],
+      tags: ['UKM'],
       summary: 'Kick Member from UKM',
       responses: {
         200: {
