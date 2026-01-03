@@ -9,8 +9,10 @@ dist/
 
 # Environment variables
 .env
+.env.production
 .env.local
 .env.*.local
+*.env
 
 # IDE
 .vscode/
@@ -33,5 +35,12 @@ yarn-error.log*
 # Testing
 coverage/
 
-# Deployment
+# Deployment & Secrets
 deploy.sh
+ecosystem.config.js
+ecosystem.config.cjs
+*.pem
+*.key
+id_rsa
+id_rsa.pub
+uch_key
