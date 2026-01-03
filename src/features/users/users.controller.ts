@@ -32,7 +32,39 @@ export const usersController = new Elysia({ prefix: '/users' })
     detail: {
       tags: ['Users'],
       summary: 'Get all users with pagination',
-      description: 'Retrieve a paginated list of users with optional filtering by search term and role.'
+      description: 'Retrieve a paginated list of users with optional filtering by search term and role.',
+      responses: {
+        200: {
+          description: 'Successful retrieval of users',
+          content: {
+            'application/json': {
+              examples: {
+                success: {
+                  summary: 'Success response',
+                  value: {
+                    data: [
+                      {
+                        id: '550e8400-e29b-41d4-a716-446655440000',
+                        email: 'user@uty.ac.id',
+                        fullName: 'John Doe',
+                        role: 'dosen',
+                        createdAt: '2023-01-01T00:00:00.000Z',
+                        updatedAt: '2023-01-01T00:00:00.000Z'
+                      }
+                    ],
+                    meta: {
+                      total: 10,
+                      page: 1,
+                      limit: 10,
+                      totalPages: 1
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   })
 
@@ -47,7 +79,47 @@ export const usersController = new Elysia({ prefix: '/users' })
   }, {
     detail: {
       tags: ['Users'],
-      summary: 'Get user details'
+      summary: 'Get user details',
+      responses: {
+        200: {
+          description: 'User found',
+          content: {
+            'application/json': {
+              examples: {
+                success: {
+                  summary: 'Success response',
+                  value: {
+                    success: true,
+                    data: {
+                      id: '550e8400-e29b-41d4-a716-446655440000',
+                      email: 'user@uty.ac.id',
+                      fullName: 'John Doe',
+                      role: 'mahasiswa',
+                      createdAt: '2023-01-01T00:00:00.000Z'
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        404: {
+          description: 'User not found',
+          content: {
+            'application/json': {
+              examples: {
+                notFound: {
+                  summary: 'Not Found',
+                  value: {
+                    success: false,
+                    message: 'User not found'
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   })
 
@@ -75,7 +147,48 @@ export const usersController = new Elysia({ prefix: '/users' })
     }),
     detail: {
       tags: ['Users'],
-      summary: 'Create new user'
+      summary: 'Create new user',
+      responses: {
+        201: {
+          description: 'User created successfully',
+          content: {
+            'application/json': {
+              examples: {
+                success: {
+                  summary: 'Success response',
+                  value: {
+                    success: true,
+                    data: {
+                      id: '550e8400-e29b-41d4-a716-446655440000',
+                      email: 'new.user@uty.ac.id',
+                      fullName: 'New User',
+                      role: 'staff',
+                      createdAt: '2023-01-01T00:00:00.000Z'
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        400: {
+          description: 'Bad Request',
+          content: {
+            'application/json': {
+              examples: {
+                error: {
+                  summary: 'Validation Error',
+                  value: {
+                    success: false,
+                    message: 'Failed to create user',
+                    error: 'Email already registered'
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   })
 
@@ -101,7 +214,34 @@ export const usersController = new Elysia({ prefix: '/users' })
     }),
     detail: {
       tags: ['Users'],
-      summary: 'Update user'
+      summary: 'Update user',
+      responses: {
+        200: {
+          description: 'User updated successfully',
+          content: {
+            'application/json': {
+              examples: {
+                success: {
+                  summary: 'Success response',
+                  value: {
+                    success: true,
+                    data: {
+                      id: '550e8400-e29b-41d4-a716-446655440000',
+                      email: 'updated@uty.ac.id',
+                      fullName: 'Updated Name',
+                      role: 'dosen',
+                      updatedAt: '2023-01-02T00:00:00.000Z'
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        404: {
+          description: 'User not found'
+        }
+      }
     }
   })
 
@@ -116,7 +256,28 @@ export const usersController = new Elysia({ prefix: '/users' })
   }, {
     detail: {
       tags: ['Users'],
-      summary: 'Delete user (Soft delete)'
+      summary: 'Delete user (Soft delete)',
+      responses: {
+        200: {
+          description: 'User deleted successfully',
+          content: {
+            'application/json': {
+              examples: {
+                success: {
+                  summary: 'Success response',
+                  value: {
+                    success: true,
+                    message: 'User deleted successfully'
+                  }
+                }
+              }
+            }
+          }
+        },
+        404: {
+          description: 'User not found'
+        }
+      }
     }
   })
 

@@ -29,7 +29,43 @@ export const mahasiswaController = new Elysia({ prefix: '/mahasiswa' })
     detail: {
       tags: ['Mahasiswa'],
       summary: 'List Mahasiswa',
-      description: 'Get paginated list of Mahasiswa (joined with User & Prodi data).'
+      description: 'Get paginated list of Mahasiswa (joined with User & Prodi data).',
+      responses: {
+        200: {
+          description: 'Successful retrieval of mahasiswa',
+          content: {
+            'application/json': {
+              examples: {
+                success: {
+                  summary: 'Success response',
+                  value: {
+                    data: [
+                      {
+                        id: 'mhs-123',
+                        userId: 'user-123',
+                        nim: '1234567890',
+                        fullName: 'Budi Santoso',
+                        email: 'budi@uty.ac.id',
+                        prodiId: 'prodi-123',
+                        prodiName: 'Informatika',
+                        angkatan: 2024,
+                        noHp: '08123456789',
+                        createdAt: '2024-01-01T00:00:00.000Z'
+                      }
+                    ],
+                    meta: {
+                      total: 1,
+                      page: 1,
+                      limit: 10,
+                      totalPages: 1
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   })
 
@@ -44,7 +80,39 @@ export const mahasiswaController = new Elysia({ prefix: '/mahasiswa' })
   }, {
     detail: {
       tags: ['Mahasiswa'],
-      summary: 'Get Mahasiswa Detail'
+      summary: 'Get Mahasiswa Detail',
+      responses: {
+        200: {
+          description: 'Mahasiswa found',
+          content: {
+            'application/json': {
+              examples: {
+                success: {
+                  summary: 'Success response',
+                  value: {
+                    success: true,
+                    data: {
+                      id: 'mhs-123',
+                      userId: 'user-123',
+                      nim: '1234567890',
+                      fullName: 'Budi Santoso',
+                      email: 'budi@uty.ac.id',
+                      prodiId: 'prodi-123',
+                      prodiName: 'Informatika',
+                      angkatan: 2024,
+                      noHp: '08123456789',
+                      createdAt: '2024-01-01T00:00:00.000Z'
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        404: {
+          description: 'Mahasiswa not found'
+        }
+      }
     }
   })
 
@@ -71,7 +139,39 @@ export const mahasiswaController = new Elysia({ prefix: '/mahasiswa' })
     detail: {
       tags: ['Mahasiswa'],
       summary: 'Create Mahasiswa',
-      description: 'Creates both User account and Mahasiswa profile in a single transaction.'
+      description: 'Creates both User account and Mahasiswa profile in a single transaction.',
+      responses: {
+        201: {
+          description: 'Mahasiswa created successfully',
+          content: {
+            'application/json': {
+              examples: {
+                success: {
+                  summary: 'Success response',
+                  value: {
+                    success: true,
+                    data: {
+                      id: 'mhs-new',
+                      userId: 'user-new',
+                      nim: '1234567890',
+                      fullName: 'Mahasiswa Baru',
+                      email: 'mhs.baru@uty.ac.id',
+                      prodiId: 'prodi-123',
+                      prodiName: 'Informatika',
+                      angkatan: 2024,
+                      noHp: '08123456789',
+                      createdAt: '2024-01-01T00:00:00.000Z'
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        400: {
+          description: 'Bad Request'
+        }
+      }
     }
   })
 
@@ -101,7 +201,39 @@ export const mahasiswaController = new Elysia({ prefix: '/mahasiswa' })
     detail: {
       tags: ['Mahasiswa'],
       summary: 'Update Mahasiswa',
-      description: 'Update User info and/or Mahasiswa academic info.'
+      description: 'Update User info and/or Mahasiswa academic info.',
+      responses: {
+        200: {
+          description: 'Mahasiswa updated successfully',
+          content: {
+            'application/json': {
+              examples: {
+                success: {
+                  summary: 'Success response',
+                  value: {
+                    success: true,
+                    data: {
+                      id: 'mhs-123',
+                      userId: 'user-123',
+                      nim: '1234567890',
+                      fullName: 'Updated Name',
+                      email: 'budi@uty.ac.id',
+                      prodiId: 'prodi-123',
+                      prodiName: 'Informatika',
+                      angkatan: 2024,
+                      noHp: '08123456789',
+                      createdAt: '2024-01-01T00:00:00.000Z'
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        404: {
+          description: 'Mahasiswa not found'
+        }
+      }
     }
   })
 
@@ -117,6 +249,27 @@ export const mahasiswaController = new Elysia({ prefix: '/mahasiswa' })
     detail: {
       tags: ['Mahasiswa'],
       summary: 'Delete Mahasiswa (Soft Delete)',
-      description: 'Soft deletes both Mahasiswa profile and linked User account.'
+      description: 'Soft deletes both Mahasiswa profile and linked User account.',
+      responses: {
+        200: {
+          description: 'Deleted successfully',
+          content: {
+            'application/json': {
+              examples: {
+                success: {
+                  summary: 'Success response',
+                  value: {
+                    success: true,
+                    message: 'Mahasiswa and User account deleted successfully'
+                  }
+                }
+              }
+            }
+          }
+        },
+        404: {
+          description: 'Mahasiswa not found'
+        }
+      }
     }
   });
