@@ -325,6 +325,120 @@ export const authController = new Elysia({ prefix: '/auth' })
   })
 
   /**
+   * POST /auth/forgot-password
+   */
+  .post('/forgot-password', async ({ body }) => {
+    try {
+      await authService.forgotPassword(body);
+      
+      return {
+        success: true,
+        message: 'If email exists, reset instructions have been sent.',
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+  }, {
+    body: t.Object({
+      email: t.String({ format: 'email' }),
+    }),
+    response: {
+      200: t.Object({
+        success: t.Boolean(),
+        message: t.Optional(t.String()),
+        error: t.Optional(t.String()),
+      }),
+    },
+    detail: {
+      tags: ['auth'],
+      summary: 'Request password reset',
+      description: 'Send reset password link to email',
+      responses: {
+        200: {
+          description: 'Request accepted',
+          content: {
+            'application/json': {
+              examples: {
+                success: {
+                  summary: 'Success',
+                  value: {
+                    success: true,
+                    message: 'If email exists, reset instructions have been sent.',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+
+  /**
+   * POST /auth/reset-password
+   */
+  .post('/reset-password', async ({ body }) => {
+    try {
+      await authService.resetPassword(body);
+      
+      return {
+        success: true,
+        message: 'Password has been reset successfully.',
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+  }, {
+    body: t.Object({
+      token: t.String(),
+      newPassword: t.String({ minLength: 6 }),
+    }),
+    response: {
+      200: t.Object({
+        success: t.Boolean(),
+        message: t.Optional(t.String()),
+        error: t.Optional(t.String()),
+      }),
+    },
+    detail: {
+      tags: ['auth'],
+      summary: 'Reset password',
+      description: 'Reset password using valid token',
+      responses: {
+        200: {
+          description: 'Password reset result',
+          content: {
+            'application/json': {
+              examples: {
+                success: {
+                  summary: 'Success',
+                  value: {
+                    success: true,
+                    message: 'Password has been reset successfully.',
+                  },
+                },
+                error: {
+                  summary: 'Invalid token',
+                  value: {
+                    success: false,
+                    error: 'Invalid or expired token',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+
+  /**
    * GET /auth/me
    */
   .get('/me', async ({ headers, jwt }) => {

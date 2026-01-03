@@ -16,6 +16,14 @@ export const config = {
     expiresIn: process.env.JWT_EXPIRES_IN || '1h',
     refreshTokenExpiresIn: parseInt(process.env.REFRESH_TOKEN_EXPIRES_IN || String(7 * 24 * 60 * 60)), // 7 days in seconds
   },
+
+  smtp: {
+    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    port: parseInt(process.env.SMTP_PORT || '587'),
+    user: process.env.SMTP_USER || 'user@example.com',
+    pass: process.env.SMTP_PASS || 'password',
+    from: process.env.SMTP_FROM || '"UTY Connection" <no-reply@uty.ac.id>',
+  },
   
   swagger: {
     servers: [

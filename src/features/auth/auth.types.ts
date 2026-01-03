@@ -14,6 +14,15 @@ export interface RefreshTokenDTO {
   refreshToken: string;
 }
 
+export interface ForgotPasswordDTO {
+  email: string;
+}
+
+export interface ResetPasswordDTO {
+  token: string;
+  newPassword: string;
+}
+
 export interface TokenPayload extends Record<string, any> {
   userId: string;
   email: string;
