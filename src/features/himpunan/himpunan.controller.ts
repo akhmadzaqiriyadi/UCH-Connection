@@ -54,7 +54,35 @@ export const himpunanController = new Elysia({ prefix: '/himpunan' })
   }, {
     detail: {
       tags: ['Himpunan (Himpunan Mahasiswa)'],
-      summary: 'Get Himpunan Detail'
+      summary: 'Get Himpunan Detail',
+      responses: {
+        200: {
+          description: 'Himpunan Details',
+          content: {
+            'application/json': {
+              examples: {
+                success: {
+                  summary: 'Success',
+                  value: {
+                    success: true,
+                    data: {
+                      id: 'himpunan-1',
+                      nama: 'Himpunan Informatika',
+                      prodiId: 'prodi-1',
+                      prodiName: 'Informatika',
+                      deskripsi: 'Wadah mahasiswa informatika',
+                      createdAt: '2024-01-01T00:00:00Z'
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        404: {
+          description: 'Himpunan not found'
+        }
+      }
     }
   })
 
@@ -75,7 +103,35 @@ export const himpunanController = new Elysia({ prefix: '/himpunan' })
     }),
     detail: {
       tags: ['Himpunan (Himpunan Mahasiswa)'],
-      summary: 'Create Himpunan'
+      summary: 'Create Himpunan',
+      responses: {
+        201: {
+          description: 'Himpunan Created',
+          content: {
+            'application/json': {
+              examples: {
+                success: {
+                  summary: 'Success',
+                  value: {
+                    success: true,
+                    data: {
+                      id: 'himpunan-new',
+                      nama: 'Himpunan Baru',
+                      prodiId: 'prodi-1',
+                      prodiName: 'Informatika',
+                      deskripsi: 'Deskripsi Himpunan Baru',
+                      createdAt: '2024-01-01T00:00:00Z'
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        400: {
+          description: 'Bad Request'
+        }
+      }
     }
   })
 
@@ -95,7 +151,35 @@ export const himpunanController = new Elysia({ prefix: '/himpunan' })
     }),
     detail: {
       tags: ['Himpunan (Himpunan Mahasiswa)'],
-      summary: 'Update Himpunan'
+      summary: 'Update Himpunan',
+      responses: {
+        200: {
+          description: 'Himpunan Updated',
+          content: {
+            'application/json': {
+              examples: {
+                success: {
+                  summary: 'Success',
+                  value: {
+                    success: true,
+                    data: {
+                      id: 'himpunan-1',
+                      nama: 'Himpunan Updated',
+                      prodiId: 'prodi-1',
+                      prodiName: 'Informatika',
+                      deskripsi: 'Updated Desc',
+                      createdAt: '2024-01-01T00:00:00Z'
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        404: {
+          description: 'Himpunan not found'
+        }
+      }
     }
   })
 
@@ -110,7 +194,28 @@ export const himpunanController = new Elysia({ prefix: '/himpunan' })
   }, {
     detail: {
       tags: ['Himpunan (Himpunan Mahasiswa)'],
-      summary: 'Delete Himpunan'
+      summary: 'Delete Himpunan',
+      responses: {
+        200: {
+          description: 'Himpunan Deleted',
+          content: {
+            'application/json': {
+              examples: {
+                success: {
+                  summary: 'Success',
+                  value: {
+                    success: true,
+                    message: 'Himpunan deleted successfully'
+                  }
+                }
+              }
+            }
+          }
+        },
+        404: {
+          description: 'Himpunan not found'
+        }
+      }
     }
   })
 
@@ -123,7 +228,35 @@ export const himpunanController = new Elysia({ prefix: '/himpunan' })
   }, {
     detail: {
       tags: ['Himpunan (Himpunan Mahasiswa)'],
-      summary: 'List Himpunan Members'
+      summary: 'List Himpunan Members',
+      responses: {
+        200: {
+          description: 'List Members',
+          content: {
+            'application/json': {
+              examples: {
+                success: {
+                  summary: 'Success',
+                  value: {
+                    success: true,
+                    data: [
+                      {
+                        id: 'mem-1',
+                        himpunanId: 'himpunan-1',
+                        mahasiswaId: 'mhs-1',
+                        mahasiswaName: 'Budi',
+                        mahasiswaNIM: '12345',
+                        jabatan: 'Ketua',
+                        joinedAt: '2024-01-01T00:00:00Z'
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   })
 
@@ -144,7 +277,28 @@ export const himpunanController = new Elysia({ prefix: '/himpunan' })
     }),
     detail: {
       tags: ['Himpunan (Himpunan Mahasiswa)'],
-      summary: 'Add Member to Himpunan'
+      summary: 'Add Member to Himpunan',
+      responses: {
+        201: {
+          description: 'Member Added',
+          content: {
+            'application/json': {
+              examples: {
+                success: {
+                  summary: 'Success',
+                  value: {
+                    success: true,
+                    message: 'Member added successfully'
+                  }
+                }
+              }
+            }
+          }
+        },
+        400: {
+          description: 'Bad Request'
+        }
+      }
     }
   })
 
@@ -160,6 +314,27 @@ export const himpunanController = new Elysia({ prefix: '/himpunan' })
   }, {
     detail: {
       tags: ['Himpunan (Himpunan Mahasiswa)'],
-      summary: 'Kick Member from Himpunan'
+      summary: 'Kick Member from Himpunan',
+      responses: {
+        200: {
+          description: 'Member Removed',
+          content: {
+            'application/json': {
+              examples: {
+                success: {
+                  summary: 'Success',
+                  value: {
+                    success: true,
+                    message: 'Member removed successfully'
+                  }
+                }
+              }
+            }
+          }
+        },
+        400: {
+          description: 'Failed to Remove'
+        }
+      }
     }
   });

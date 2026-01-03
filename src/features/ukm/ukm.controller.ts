@@ -52,7 +52,33 @@ export const ukmController = new Elysia({ prefix: '/ukm' })
   }, {
     detail: {
       tags: ['UKM (Unit Kegiatan Mahasiswa)'],
-      summary: 'Get UKM Detail'
+      summary: 'Get UKM Detail',
+      responses: {
+        200: {
+          description: 'UKM Details',
+          content: {
+            'application/json': {
+              examples: {
+                success: {
+                  summary: 'Success',
+                  value: {
+                    success: true,
+                    data: {
+                      id: 'ukm-1',
+                      nama: 'UKM Olahraga',
+                      deskripsi: 'Unit kegiatan olahraga',
+                      createdAt: '2024-01-01T00:00:00Z'
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        404: {
+          description: 'UKM not found'
+        }
+      }
     }
   })
 
@@ -72,7 +98,33 @@ export const ukmController = new Elysia({ prefix: '/ukm' })
     }),
     detail: {
       tags: ['UKM (Unit Kegiatan Mahasiswa)'],
-      summary: 'Create UKM'
+      summary: 'Create UKM',
+      responses: {
+        201: {
+          description: 'UKM Created',
+          content: {
+            'application/json': {
+              examples: {
+                success: {
+                  summary: 'Success',
+                  value: {
+                    success: true,
+                    data: {
+                      id: 'ukm-new',
+                      nama: 'UKM Baru',
+                      deskripsi: 'Deskripsi UKM Baru',
+                      createdAt: '2024-01-01T00:00:00Z'
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        400: {
+          description: 'Bad Request'
+        }
+      }
     }
   })
 
@@ -91,7 +143,33 @@ export const ukmController = new Elysia({ prefix: '/ukm' })
     }),
     detail: {
       tags: ['UKM (Unit Kegiatan Mahasiswa)'],
-      summary: 'Update UKM'
+      summary: 'Update UKM',
+      responses: {
+        200: {
+          description: 'UKM Updated',
+          content: {
+            'application/json': {
+              examples: {
+                success: {
+                  summary: 'Success',
+                  value: {
+                    success: true,
+                    data: {
+                      id: 'ukm-1',
+                      nama: 'UKM Olahraga Updated',
+                      deskripsi: 'Unit updated',
+                      createdAt: '2024-01-01T00:00:00Z'
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        404: {
+          description: 'UKM not found'
+        }
+      }
     }
   })
 
@@ -106,7 +184,28 @@ export const ukmController = new Elysia({ prefix: '/ukm' })
   }, {
     detail: {
       tags: ['UKM (Unit Kegiatan Mahasiswa)'],
-      summary: 'Delete UKM'
+      summary: 'Delete UKM',
+      responses: {
+        200: {
+          description: 'UKM Deleted',
+          content: {
+            'application/json': {
+              examples: {
+                success: {
+                  summary: 'Success',
+                  value: {
+                    success: true,
+                    message: 'UKM deleted successfully'
+                  }
+                }
+              }
+            }
+          }
+        },
+        404: {
+          description: 'UKM not found'
+        }
+      }
     }
   })
 
@@ -119,7 +218,35 @@ export const ukmController = new Elysia({ prefix: '/ukm' })
   }, {
     detail: {
       tags: ['UKM (Unit Kegiatan Mahasiswa)'],
-      summary: 'List UKM Members'
+      summary: 'List UKM Members',
+      responses: {
+        200: {
+          description: 'List of Members',
+          content: {
+            'application/json': {
+              examples: {
+                success: {
+                  summary: 'Success',
+                  value: {
+                    success: true,
+                    data: [
+                      {
+                        id: 'mem-1',
+                        ukmId: 'ukm-1',
+                        mahasiswaId: 'mhs-1',
+                        mahasiswaName: 'Budi',
+                        mahasiswaNIM: '12345',
+                        jabatan: 'Ketua',
+                        joinedAt: '2024-01-01T00:00:00Z'
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   })
 
@@ -140,7 +267,28 @@ export const ukmController = new Elysia({ prefix: '/ukm' })
     }),
     detail: {
       tags: ['UKM (Unit Kegiatan Mahasiswa)'],
-      summary: 'Add Member to UKM'
+      summary: 'Add Member to UKM',
+      responses: {
+        201: {
+          description: 'Member Added',
+          content: {
+            'application/json': {
+              examples: {
+                success: {
+                  summary: 'Success',
+                  value: {
+                    success: true,
+                    message: 'Member added successfully'
+                  }
+                }
+              }
+            }
+          }
+        },
+        400: {
+          description: 'Bad Request / Already Member'
+        }
+      }
     }
   })
 
@@ -156,6 +304,27 @@ export const ukmController = new Elysia({ prefix: '/ukm' })
   }, {
     detail: {
       tags: ['UKM (Unit Kegiatan Mahasiswa)'],
-      summary: 'Kick Member from UKM'
+      summary: 'Kick Member from UKM',
+      responses: {
+        200: {
+          description: 'Member Removed',
+          content: {
+            'application/json': {
+              examples: {
+                success: {
+                  summary: 'Success',
+                  value: {
+                    success: true,
+                    message: 'Member removed successfully'
+                  }
+                }
+              }
+            }
+          }
+        },
+        400: {
+          description: 'Failed to remove'
+        }
+      }
     }
   });
