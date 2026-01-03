@@ -10,6 +10,8 @@ import { authController } from './features/auth/auth.controller.ts';
 import { usersController } from './features/users/users.controller.ts';
 import { mahasiswaController } from './features/mahasiswa/mahasiswa.controller.ts';
 import { dosenController } from './features/dosen/dosen.controller.ts';
+import { ukmController } from './features/ukm/ukm.controller.ts';
+import { himpunanController } from './features/himpunan/himpunan.controller.ts';
 
 // Create app with logging
 const app = loggingMiddleware(new Elysia())
@@ -34,6 +36,8 @@ const app = loggingMiddleware(new Elysia())
               { name: 'Users', description: 'User management endpoints (Admin only)' },
               { name: 'Mahasiswa', description: 'Mahasiswa Academic Data Management (Admin only)' },
               { name: 'Dosen', description: 'Dosen Data Management (Admin only)' },
+              { name: 'UKM', description: 'Unit Kegiatan Mahasiswa Management (Admin only)' },
+              { name: 'Himpunan', description: 'Himpunan Mahasiswa Management (Admin only)' },
             ],
           },
           scalarConfig: {
@@ -49,6 +53,8 @@ const app = loggingMiddleware(new Elysia())
       .use(usersController)
       .use(mahasiswaController)
       .use(dosenController)
+      .use(ukmController)
+      .use(himpunanController)
   )
   
   .listen(config.port);
