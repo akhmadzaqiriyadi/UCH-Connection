@@ -8,6 +8,7 @@ import { homeController } from './features/home/home.controller.ts';
 import { healthController } from './features/health/health.controller.ts';
 import { authController } from './features/auth/auth.controller.ts';
 import { usersController } from './features/users/users.controller.ts';
+import { mahasiswaController } from './features/mahasiswa/mahasiswa.controller.ts';
 
 // Create app with logging
 const app = loggingMiddleware(new Elysia())
@@ -30,6 +31,7 @@ const app = loggingMiddleware(new Elysia())
               { name: 'auth', description: 'Authentication endpoints' },
               { name: 'health', description: 'Health check endpoints' },
               { name: 'Users', description: 'User management endpoints (Admin only)' },
+              { name: 'Mahasiswa', description: 'Mahasiswa Academic Data Management (Admin only)' },
             ],
           },
           scalarConfig: {
@@ -43,6 +45,7 @@ const app = loggingMiddleware(new Elysia())
       .use(healthController)
       .use(authController)
       .use(usersController)
+      .use(mahasiswaController)
   )
   
   .listen(config.port);
