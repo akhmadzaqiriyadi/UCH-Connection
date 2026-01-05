@@ -8,10 +8,11 @@ export const dashboardController = new Elysia({ prefix: '/dashboard' })
   .use(authMiddleware)
 
   // Get Stats
-  .get('/stats', async ({ user }: any) => {
+  .get('/stats', async ({ user, set }: any) => {
     // Role Check
-    if (user.role !== 'admin') {
-      throw new Error('Forbidden: Admin only');
+    if (!user || user.role !== 'admin') {
+      set.status = 403;
+      return { success: false, error: 'Forbidden: Admin only' };
     }
 
     // Parallel queries for speed
@@ -121,10 +122,11 @@ export const dashboardController = new Elysia({ prefix: '/dashboard' })
   })
 
   // Get Events Stats
-  .get('/events-stats', async ({ user }: any) => {
+  .get('/events-stats', async ({ user, set }: any) => {
     // Role Check
-    if (user.role !== 'admin') {
-      throw new Error('Forbidden: Admin only');
+    if (!user || user.role !== 'admin') {
+      set.status = 403;
+      return { success: false, error: 'Forbidden: Admin only' };
     }
 
     const { events, eventRegistrants } = await import('../../db/schema');
