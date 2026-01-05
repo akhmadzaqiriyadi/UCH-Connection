@@ -1,16 +1,28 @@
 import { Elysia, t } from 'elysia';
+import { jwt } from '@elysiajs/jwt';
 import { db } from '../../db';
 import { users, mahasiswa, dosen, ukm, himpunan, bookings } from '../../db/schema';
 import { authMiddleware, requireRole } from '../../middlewares/auth.middleware';
 import { count, isNull, eq, desc } from 'drizzle-orm';
+import { config } from '../../config/index.ts';
 
 export const dashboardController = new Elysia({ prefix: '/dashboard' })
-  .use(authMiddleware)
+  .use(jwt({
+    name: 'jwt',
+    secret: config.jwt.secret
+  }))
 
   // Get Stats
-  .get('/stats', async ({ user, set }: any) => {
-    // Role Check
-    if (!user || user.role !== 'admin') {
+  .get('/stats', async ({ headers, jwt, set }: any) => {
+    // Manual JWT verification
+    const authHeader = headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      set.status = 401;
+      return { success: false, error: 'Unauthorized' };
+    }
+    const token = authHeader.replace('Bearer ', '');
+    const payload = await jwt.verify(token);
+    if (!payload || payload.role !== 'admin') {
       set.status = 403;
       return { success: false, error: 'Forbidden: Admin only' };
     }
@@ -122,9 +134,16 @@ export const dashboardController = new Elysia({ prefix: '/dashboard' })
   })
 
   // Get Events Stats
-  .get('/events-stats', async ({ user, set }: any) => {
-    // Role Check
-    if (!user || user.role !== 'admin') {
+  .get('/events-stats', async ({ headers, jwt, set }: any) => {
+    // Manual JWT verification
+    const authHeader = headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      set.status = 401;
+      return { success: false, error: 'Unauthorized' };
+    }
+    const token = authHeader.replace('Bearer ', '');
+    const payload = await jwt.verify(token);
+    if (!payload || payload.role !== 'admin') {
       set.status = 403;
       return { success: false, error: 'Forbidden: Admin only' };
     }
