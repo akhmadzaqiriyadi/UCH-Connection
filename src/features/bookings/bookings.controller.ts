@@ -195,7 +195,32 @@ export const bookingsController = new Elysia({ prefix: '/bookings' })
         detail: {
             tags: ['Bookings'],
             summary: 'My Bookings',
-            description: 'Get list of bookings created by current user'
+            description: 'Get list of bookings created by current user',
+            responses: {
+                200: {
+                    description: 'User Bookings',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                example: {
+                                    success: true,
+                                    data: [
+                                        {
+                                            id: "bk_123",
+                                            title: "Rapat Himpunan",
+                                            start: "2026-06-01T08:00:00.000Z",
+                                            end: "2026-06-01T10:00:00.000Z",
+                                            status: "pending",
+                                            ruangan: { nama: "Meeting Room A" }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     })
 
@@ -230,7 +255,27 @@ export const bookingsController = new Elysia({ prefix: '/bookings' })
         detail: {
             tags: ['Bookings'],
             summary: 'Request Booking',
-            description: 'Submit a new room booking request'
+            description: 'Submit a new room booking request',
+            responses: {
+                201: {
+                    description: 'Booking Created',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                example: {
+                                    success: true,
+                                    data: {
+                                        id: "bk_new_1",
+                                        status: "pending",
+                                        message: "Booking submitted successfully"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     })
 
@@ -246,7 +291,29 @@ export const bookingsController = new Elysia({ prefix: '/bookings' })
         const data = await bookingService.findAll({ isAdmin: true });
         return { success: true, data };
     }, {
-        detail: { tags: ['Bookings'], summary: 'List All Bookings (Admin)' }
+        detail: { 
+            tags: ['Bookings'], 
+            summary: 'List All Bookings (Admin)',
+            responses: {
+                200: {
+                    description: 'All Bookings',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                example: {
+                                    success: true,
+                                    data: [
+                                        { id: "bk_1", user: { fullName: "User A" }, status: "pending" },
+                                        { id: "bk_2", user: { fullName: "User B" }, status: "approved" }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     })
 
     /**

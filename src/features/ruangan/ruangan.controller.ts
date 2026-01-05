@@ -88,6 +88,22 @@ export const ruanganController = new Elysia({ prefix: '/ruangan' })
             tags: ['Ruangan'],
             summary: 'Upload Room Image (Admin)',
             description: 'Upload image file. Returns relative path to be stored in DB.',
+            responses: {
+                200: {
+                    description: 'Image Uploaded',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                example: {
+                                    success: true,
+                                    data: { path: "/uploads/ruangan/room-a.jpg" }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     })
     
