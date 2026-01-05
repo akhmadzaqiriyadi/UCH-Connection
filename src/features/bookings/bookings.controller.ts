@@ -203,15 +203,18 @@ export const bookingsController = new Elysia({ prefix: '/bookings' })
      * POST /bookings
      * Create Booking Request
      */
-    .post('/', async ({ user, body }: any) => {
+    .post('/', async ({ body, headers, jwt }: any) => {
         try {
-            // Context Check (Debug)
-            if (!user) {
-                console.error('CRITICAL: User context missing after authMiddleware');
-                throw new Error('User context missing');
+            const authHeader = headers.authorization;
+            if (!authHeader || !authHeader.startsWith('Bearer ')) {
+                throw new Error('Unauthorized');
             }
+            const token = authHeader.replace('Bearer ', '');
+            const payload = await jwt.verify(token);
+
+            if (!payload) throw new Error('Invalid Token');
             
-            const data = await bookingService.create(user.userId, body);
+            const data = await bookingService.create(payload.userId as string, body);
             return { success: true, data };
         } catch (error: any) {
             return { success: false, error: error.message };
