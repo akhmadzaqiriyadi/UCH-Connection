@@ -176,9 +176,8 @@ export const bookingsController = new Elysia({ prefix: '/bookings' })
       }
   })
 
-  // Protected Routes (User)
-  .group('', app => app
-    .use(authMiddleware)
+  // Protected Routes (User) - Apply middleware directly
+  .use(authMiddleware)
     
     /**
      * GET /bookings
@@ -205,11 +204,15 @@ export const bookingsController = new Elysia({ prefix: '/bookings' })
      */
     .post('/', async (context: any) => {
         try {
+            // Revert verbose debug for cleanliness, trust the chaining fix
             const { user, body } = context;
-            console.log('DEBUG FULL CONTEXT KEYS:', Object.keys(context));
-            console.log('DEBUG USER VALUE:', user);
             
-            if (!user) throw new Error('User context missing');
+            if (!user) {
+                // Last ditch debug
+                console.log('User still missing in direct chain. Context keys:', Object.keys(context));
+                throw new Error('User context missing');
+            }
+            
             const data = await bookingService.create(user.userId, body);
             return { success: true, data };
         } catch (error: any) {
@@ -229,7 +232,6 @@ export const bookingsController = new Elysia({ prefix: '/bookings' })
             description: 'Submit a new room booking request'
         }
     })
-  )
 
   // Admin Routes
   .group('/manage', app => app
