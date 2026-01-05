@@ -14,6 +14,8 @@ import { ukmController } from './features/ukm/ukm.controller.ts';
 import { himpunanController } from './features/himpunan/himpunan.controller.ts';
 import { masterController } from './features/master/master.controller.ts';
 import { dashboardController } from './features/dashboard/dashboard.controller.ts';
+import { ruanganController } from './features/ruangan/ruangan.controller.ts';
+import { bookingsController } from './features/bookings/bookings.controller.ts';
 
 // Create app with logging
 const app = loggingMiddleware(new Elysia())
@@ -42,6 +44,8 @@ const app = loggingMiddleware(new Elysia())
               { name: 'Himpunan', description: 'Himpunan Mahasiswa Management (Admin only)' },
               { name: 'Master Data', description: 'Public Master Data (Fakultas, Prodi) for Dropdowns' },
               { name: 'Dashboard', description: 'Admin Statistics (Admin only)' },
+              { name: 'Ruangan', description: 'Room Master Data Management' },
+              { name: 'Bookings', description: 'Room Booking System' },
             ],
           },
           scalarConfig: {
@@ -61,6 +65,8 @@ const app = loggingMiddleware(new Elysia())
       .use(himpunanController)
       .use(masterController)
       .use(dashboardController)
+      .use(ruanganController)
+      .use(bookingsController)
   )
   
   .listen(config.port);

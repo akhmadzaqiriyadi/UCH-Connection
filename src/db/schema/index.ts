@@ -3,6 +3,8 @@ import { relations } from 'drizzle-orm';
 
 // Enums
 export const roleEnum = pgEnum('role', ['admin', 'dosen', 'mahasiswa', 'staff']);
+export const bookingStatusEnum = pgEnum('booking_status', ['pending', 'approved', 'rejected', 'cancelled', 'checked_in', 'completed']);
+export const roomStatusEnum = pgEnum('room_status', ['available', 'maintenance']);
 
 // Users table
 export const users = pgTable('users', {
@@ -107,6 +109,45 @@ export const refreshTokens = pgTable('refresh_tokens', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
+// Ruangan (Room Master Data)
+export const ruangan = pgTable('ruangan', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  kode: varchar('kode', { length: 20 }).notNull().unique(), // e.g. 'A.2.1'
+  nama: varchar('nama', { length: 100 }).notNull(), // e.g. 'Lab Komputer 1'
+  lantai: integer('lantai').notNull(),
+  gedung: varchar('gedung', { length: 50 }).notNull(),
+  kapasitas: integer('kapasitas').notNull(),
+  fasilitas: text('fasilitas'), // e.g. "AC, Proyektor, Sound"
+  status: varchar('status', { length: 20 }).default('available'), // available, maintenance
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  deletedAt: timestamp('deleted_at'),
+});
+
+// Bookings
+export const bookings = pgTable('bookings', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').notNull().references(() => users.id),
+  ruanganId: uuid('ruangan_id').notNull().references(() => ruangan.id),
+  purpose: text('purpose').notNull(),
+  audienceCount: integer('audience_count').notNull(),
+  startTime: timestamp('start_time').notNull(),
+  endTime: timestamp('end_time').notNull(),
+  status: varchar('status', { length: 20 }).default('pending').notNull(),
+  rejectionReason: text('rejection_reason'),
+  qrToken: varchar('qr_token', { length: 255 }), // Generated upon approval
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+// Checkins
+export const checkins = pgTable('checkins', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  bookingId: uuid('booking_id').notNull().references(() => bookings.id).unique(),
+  checkinTime: timestamp('checkin_time').defaultNow().notNull(),
+  checkedInBy: uuid('checked_in_by').references(() => users.id), // Optional: who scanned it?
+});
+
 // Relations
 export const usersRelations = relations(users, ({ one }) => ({
   mahasiswa: one(mahasiswa, {
@@ -188,5 +229,32 @@ export const himpunanMembersRelations = relations(himpunanMembers, ({ one }) => 
   mahasiswa: one(mahasiswa, {
     fields: [himpunanMembers.mahasiswaId],
     references: [mahasiswa.id],
+  }),
+}));
+
+export const ruanganRelations = relations(ruangan, ({ many }) => ({
+  bookings: many(bookings),
+}));
+
+export const bookingsRelations = relations(bookings, ({ one, many }) => ({
+  user: one(users, {
+    fields: [bookings.userId],
+    references: [users.id],
+  }),
+  ruangan: one(ruangan, {
+    fields: [bookings.ruanganId],
+    references: [ruangan.id],
+  }),
+  checkin: one(checkins),
+}));
+
+export const checkinsRelations = relations(checkins, ({ one }) => ({
+  booking: one(bookings, {
+    fields: [checkins.bookingId],
+    references: [bookings.id],
+  }),
+  checkedInBy: one(users, {
+    fields: [checkins.checkedInBy],
+    references: [users.id],
   }),
 }));
