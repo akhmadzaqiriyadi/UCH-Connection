@@ -1,0 +1,1 @@
+ALTER TABLE "ruangan" ADD COLUMN "image" varchar(255);

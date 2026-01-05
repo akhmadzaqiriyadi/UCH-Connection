@@ -8,6 +8,7 @@ export interface RuanganDTO {
   gedung: string;
   kapasitas: number;
   fasilitas?: string | null;
+  image?: string | null;
   status: string;
   createdAt: string;
 }
@@ -19,6 +20,7 @@ export type CreateRuanganDTO = {
   gedung: string;
   kapasitas: number;
   fasilitas?: string;
+  image?: string;
   status?: 'available' | 'maintenance';
 };
 

@@ -1,6 +1,7 @@
 import { Elysia, t } from 'elysia';
 import { ruanganService } from './ruangan.service.ts';
 import { authMiddleware, requireRole } from '../../middlewares/auth.middleware.ts';
+import { saveFile } from '../../lib/file_utils.ts';
 
 export const ruanganController = new Elysia({ prefix: '/ruangan' })
 
@@ -47,6 +48,8 @@ export const ruanganController = new Elysia({ prefix: '/ruangan' })
                                         gedung: 'A',
                                         lantai: 2,
                                         kapasitas: 40,
+                                        fasilitas: 'AC, PC',
+                                        image: '/uploads/ruangan/abc.jpg',
                                         status: 'available'
                                     }
                                 ]
@@ -63,6 +66,30 @@ export const ruanganController = new Elysia({ prefix: '/ruangan' })
   // Protected Admin Routes for Management
   .group('/manage', app => app
     .use(requireRole('admin'))
+
+    /**
+     * POST /ruangan/manage/upload
+     * Upload Room Image
+     */
+    .post('/upload', async ({ body, set }: any) => {
+        try {
+            if (!body.file) throw new Error('File is required');
+            const path = await saveFile(body.file, 'ruangan');
+            return { success: true, data: { path } };
+        } catch (error: any) {
+            set.status = 400;
+            return { success: false, error: error.message };
+        }
+    }, {
+        body: t.Object({
+            file: t.File()
+        }),
+        detail: {
+            tags: ['Ruangan'],
+            summary: 'Upload Room Image (Admin)',
+            description: 'Upload image file. Returns relative path to be stored in DB.',
+        }
+    })
     
     /**
      * POST /ruangan/manage
@@ -83,6 +110,7 @@ export const ruanganController = new Elysia({ prefix: '/ruangan' })
         gedung: t.String(),
         kapasitas: t.Number(),
         fasilitas: t.Optional(t.String()),
+        image: t.Optional(t.String()), // Image path from upload
         status: t.Optional(t.Union([t.Literal('available'), t.Literal('maintenance')]))
       }),
       detail: {
@@ -128,6 +156,7 @@ export const ruanganController = new Elysia({ prefix: '/ruangan' })
         gedung: t.Optional(t.String()),
         kapasitas: t.Optional(t.Number()),
         fasilitas: t.Optional(t.String()),
+        image: t.Optional(t.String()),
         status: t.Optional(t.Union([t.Literal('available'), t.Literal('maintenance')]))
       }),
       detail: {

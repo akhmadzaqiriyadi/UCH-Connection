@@ -118,6 +118,7 @@ export const ruangan = pgTable('ruangan', {
   gedung: varchar('gedung', { length: 50 }).notNull(),
   kapasitas: integer('kapasitas').notNull(),
   fasilitas: text('fasilitas'), // e.g. "AC, Proyektor, Sound"
+  image: varchar('image', { length: 255 }), // URL path to image
   status: varchar('status', { length: 20 }).default('available'), // available, maintenance
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),

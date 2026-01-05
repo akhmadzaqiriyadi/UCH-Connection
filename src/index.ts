@@ -1,6 +1,7 @@
 import { Elysia } from 'elysia';
 import { swagger } from '@elysiajs/swagger';
 import { cors } from '@elysiajs/cors';
+import { staticPlugin } from '@elysiajs/static';
 import { config } from './config/index.ts';
 import { logger } from './lib/utils.ts';
 import { loggingMiddleware } from './middlewares/logging.middleware.ts';
@@ -21,6 +22,10 @@ import { bookingsController } from './features/bookings/bookings.controller.ts';
 const app = loggingMiddleware(new Elysia())
   // Global plugins
   .use(cors())
+  .use(staticPlugin({
+      assets: 'public',
+      prefix: '/' // Access via /uploads/...
+  }))
   
   // Home page
   .use(homeController)
