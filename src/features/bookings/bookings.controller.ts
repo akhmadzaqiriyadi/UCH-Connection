@@ -176,57 +176,56 @@ export const bookingsController = new Elysia({ prefix: '/bookings' })
       }
   })
 
-  .use(authMiddleware) // All subsequent routes require login
+  // Protected Routes (User)
+  .group('/', app => app
+    .use(authMiddleware)
+    
+    /**
+     * GET /bookings
+     * My Bookings
+     */
+    .get('/', async ({ user }: any) => {
+        try {
+            const data = await bookingService.findAll({ userId: user.userId });
+            return { success: true, data };
+        } catch (error: any) {
+            return { success: false, error: error.message };
+        }
+    }, {
+        detail: {
+            tags: ['Bookings'],
+            summary: 'My Bookings',
+            description: 'Get list of bookings created by current user'
+        }
+    })
 
-  /**
-   * GET /bookings
-   * List bookings (User sees own, Admin sees all?)
-   * Let's split: /bookings (Own), /bookings/all (Admin)
-   */
-  .get('/', async ({ user, query }: any) => {
-    try {
-      const data = await bookingService.findAll({ userId: user.userId });
-      return { success: true, data };
-    } catch (error: any) {
-      return { success: false, error: error.message };
-    }
-  }, {
-    detail: {
-      tags: ['Bookings'],
-      summary: 'My Bookings',
-      description: 'Get list of bookings created by current user'
-    }
-  })
-
-  /**
-   * POST /bookings
-   * Create Booking Request
-   */
-  .post('/', async ({ user, body }: any) => {
-    try {
-      console.log('DEBUG BOOKING USER:', user);
-      if (!user) {
-          throw new Error('User context is missing');
-      }
-      const data = await bookingService.create(user.userId, body);
-      return { success: true, data };
-    } catch (error: any) {
-      return { success: false, error: error.message };
-    }
-  }, {
-    body: t.Object({
-      ruanganId: t.String(),
-      purpose: t.String(),
-      audienceCount: t.Number(),
-      startTime: t.String(), // Validated as ISO string in logic
-      endTime: t.String()
-    }),
-    detail: {
-      tags: ['Bookings'],
-      summary: 'Request Booking',
-      description: 'Submit a new room booking request'
-    }
-  })
+    /**
+     * POST /bookings
+     * Create Booking Request
+     */
+    .post('/', async ({ user, body }: any) => {
+        try {
+            if (!user) throw new Error('User context missing');
+            const data = await bookingService.create(user.userId, body);
+            return { success: true, data };
+        } catch (error: any) {
+            return { success: false, error: error.message };
+        }
+    }, {
+        body: t.Object({
+            ruanganId: t.String(),
+            purpose: t.String(),
+            audienceCount: t.Number(),
+            startTime: t.String(),
+            endTime: t.String()
+        }),
+        detail: {
+            tags: ['Bookings'],
+            summary: 'Request Booking',
+            description: 'Submit a new room booking request'
+        }
+    })
+  )
 
   // Admin Routes
   .group('/manage', app => app
