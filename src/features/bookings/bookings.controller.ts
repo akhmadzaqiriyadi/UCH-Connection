@@ -177,7 +177,7 @@ export const bookingsController = new Elysia({ prefix: '/bookings' })
   })
 
   // Protected Routes (User)
-  .group('/', app => app
+  .group('', app => app
     .use(authMiddleware)
     
     /**
