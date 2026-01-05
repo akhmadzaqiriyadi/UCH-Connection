@@ -130,26 +130,28 @@ export const eventsController = new Elysia({ prefix: '/events' })
     })
 
     // --- PROTECTED ROUTES (Admin/Organizer) ---
-    .use(authMiddleware)
+    // Using manual verification for stability
     
     /**
      * POST /events
      * Create New Event
      */
-    .post('/', async ({ user, body }: any) => {
+    .post('/', async ({ body, headers, jwt }: any) => {
         try {
-            // Organizer is the creator
-            // TODO: Upload Banner Image logic? 
-            // For now assume image is uploaded separately or base64? 
-            // Let's assume URL string for simple Create DTO.
+            const authHeader = headers.authorization;
+            if (!authHeader || !authHeader.startsWith('Bearer ')) throw new Error('Unauthorized');
+            const token = authHeader.replace('Bearer ', '');
+            const payload = await jwt.verify(token);
+            if (!payload) throw new Error('Invalid Token');
             
-            const data = await eventsService.create(user.userId, body);
+            // Organizer is the creator
+            const data = await eventsService.create(payload.userId, body);
             return { success: true, data };
         } catch (error: any) {
             return { success: false, error: error.message };
         }
     }, {
-        body: CreateEventDTO, // Using imported Schema
+        body: CreateEventDTO,
         detail: {
             tags: ['Events'],
             summary: 'Create Event',
@@ -161,10 +163,14 @@ export const eventsController = new Elysia({ prefix: '/events' })
      * POST /events/registrants/:id/verify
      * Verify Payment
      */
-    .post('/registrants/:id/verify', async ({ params, body }: any) => {
+    .post('/registrants/:id/verify', async ({ params, body, headers, jwt }: any) => {
         try {
-            // Only Admin/Organizer should access this
-            // We can add check later
+            const authHeader = headers.authorization;
+            if (!authHeader || !authHeader.startsWith('Bearer ')) throw new Error('Unauthorized');
+            const token = authHeader.replace('Bearer ', '');
+            const payload = await jwt.verify(token);
+            if (!payload) throw new Error('Invalid Token');
+
             const status = body.status;
             const updated = await eventsService.verifyPayment(params.id, status as 'paid' | 'rejected');
             return { success: true, data: updated };
