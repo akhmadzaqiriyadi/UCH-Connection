@@ -132,10 +132,6 @@ else
     echo $USER2_RES
 fi
 
-    echo -e "${RED}   ❌ FAILED: User 2 should be rejected but got response:${NC}"
-    echo $USER2_RES
-fi
-
 
 # ========================================================
 # CASE 3: ROLE RESTRICTION (Mahasiswa cannot create Event)

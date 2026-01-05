@@ -25,8 +25,24 @@ export const eventsController = new Elysia({ prefix: '/events' })
     }, {
         detail: {
             tags: ['Events'],
-            summary: 'List Events',
-            description: 'Get list of upcoming events'
+            summary: '[PUBLIC] List Events',
+            description: 'Get list of upcoming events. Publicly accessible.',
+            responses: {
+                200: {
+                    description: 'List of events',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: {
+                                    success: { type: 'boolean', example: true },
+                                    data: { type: 'array', items: { type: 'object', example: { id: 'evt_123', title: 'Seminar IT', price: 50000, quota: 100 } } }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     })
 
@@ -44,8 +60,28 @@ export const eventsController = new Elysia({ prefix: '/events' })
     }, {
         detail: {
             tags: ['Events'],
-            summary: 'Event Detail',
-            description: 'Get detailed info of an event'
+            summary: '[PUBLIC] Event Detail',
+            description: 'Get detailed info of an event including schema form.',
+            responses: {
+                200: {
+                    description: 'Event Detail Data',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                example: {
+                                    success: true,
+                                    data: {
+                                        id: "evt_123",
+                                        title: "Workshop",
+                                        registrationFormSchema: [{ key: "size", label: "Ukuran Kaos", type: "text" }]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     })
 
@@ -94,8 +130,29 @@ export const eventsController = new Elysia({ prefix: '/events' })
     }, {
         detail: {
             tags: ['Events'],
-            summary: 'Register Event',
-            description: 'Register as user or guest'
+            summary: '[PUBLIC/AUTH] Register Event',
+            description: 'Register as user (with Token) or guest (without Token). Guest must provide name & email.',
+            responses: {
+                200: {
+                    description: 'Registration Successful',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                example: {
+                                    success: true,
+                                    data: {
+                                        id: "reg_123",
+                                        paymentStatus: "pending",
+                                        needPayment: true,
+                                        qrToken: null
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     })
 
@@ -124,8 +181,24 @@ export const eventsController = new Elysia({ prefix: '/events' })
         }),
         detail: {
             tags: ['Events'],
-            summary: 'Upload Payment Proof',
-            description: 'Upload transfer receipt'
+            summary: '[PUBLIC] Upload Payment Proof',
+            description: 'Upload transfer receipt for paid events.',
+            responses: {
+                200: {
+                    description: 'Proof Uploaded Successfully',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                example: {
+                                    success: true,
+                                    data: { paymentProof: "/uploads/payments/xyz.jpg" }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     })
 
@@ -161,8 +234,24 @@ export const eventsController = new Elysia({ prefix: '/events' })
         body: CreateEventDTO,
         detail: {
             tags: ['Events'],
-            summary: 'Create Event',
-            description: 'Create a new event (Admin/UKM)'
+            summary: '[ADMIN/STAFF] Create Event',
+            description: 'Create a new event. Restricted to Admin, Dosen, Staff.',
+            responses: {
+                200: {
+                    description: 'Event Created Successfully',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                example: {
+                                    success: true,
+                                    data: { id: "evt_new_1", title: "New Event" }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     })
 
@@ -191,13 +280,27 @@ export const eventsController = new Elysia({ prefix: '/events' })
             return { success: false, error: error.message };
         }
     }, {
-        body: t.Object({
-            status: t.Union([t.Literal('paid'), t.Literal('rejected')])
-        }),
+        body: VerifyPaymentDTO,
         detail: {
             tags: ['Events'],
-            summary: 'Verify Payment',
-            description: 'Approve or Reject payment'
+            summary: '[ADMIN/STAFF] Verify Payment',
+            description: 'Approve or Reject payment. Approving generates QR Token.',
+            responses: {
+                200: {
+                    description: 'Payment Verified',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                example: {
+                                    success: true,
+                                    data: { status: "registered", qrToken: "uuid-token" }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     })
 
@@ -219,7 +322,23 @@ export const eventsController = new Elysia({ prefix: '/events' })
         }),
         detail: {
             tags: ['Events'],
-            summary: 'Event Check-in',
-            description: 'Scan QR Code for attendance'
+            summary: '[OPERATOR] Event Check-in',
+            description: 'Scan QR Code for attendance.',
+             responses: {
+                200: {
+                    description: 'Checkin Successful',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                example: {
+                                    success: true,
+                                    data: { valid: true, guestName: "Budi", eventName: "Seminar" }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     });
