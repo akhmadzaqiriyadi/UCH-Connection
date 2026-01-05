@@ -335,7 +335,36 @@ export const bookingsController = new Elysia({ prefix: '/bookings' })
       detail: {
         tags: ['Bookings'],
         summary: 'Process Booking (Approve/Reject)',
-        description: 'Admin action to approve/reject booking'
+        description: 'Admin action to approve/reject booking',
+        responses: {
+          200: {
+            description: 'Booking Processed',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  example: {
+                    success: true,
+                    data: {
+                      id: "bk_123",
+                      userId: "user_456",
+                      ruanganId: "room_789",
+                      purpose: "Meeting Proyek Akhir",
+                      audienceCount: 15,
+                      startTime: "2026-02-10T09:00:00.000Z",
+                      endTime: "2026-02-10T11:00:00.000Z",
+                      status: "approved",
+                      qrToken: "qr-uuid-generated-abc123",
+                      rejectionReason: null,
+                      createdAt: "2026-01-05T08:00:00.000Z",
+                      updatedAt: "2026-01-05T10:30:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     })
 
@@ -357,7 +386,32 @@ export const bookingsController = new Elysia({ prefix: '/bookings' })
       detail: {
         tags: ['Bookings'],
         summary: 'Check-in User (Scan QR)',
-        description: 'Update status to checked_in using QR Token'
+        description: 'Update status to checked_in using QR Token',
+        responses: {
+          200: {
+            description: 'Check-in Successful',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  example: {
+                    success: true,
+                    data: {
+                      success: true,
+                      message: "Check-in successful",
+                      booking: {
+                        id: "bk_123",
+                        user: "Budi Santoso",
+                        room: "Meeting Room A",
+                        time: "2026-02-10T09:00:00.000Z"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     })
   );
