@@ -96,7 +96,28 @@ export const eventsController = new Elysia({ prefix: '/events' })
                                 type: 'object',
                                 example: {
                                     success: true,
-                                    data: [{ id: "evt_1", title: "My Event" }]
+                                    data: [
+                                        {
+                                            id: "evt_1",
+                                            title: "Workshop UI/UX Design",
+                                            description: "Belajar prinsip desain interface modern",
+                                            bannerImage: "/uploads/events/workshop-uiux.jpg",
+                                            startTime: "2026-03-15T09:00:00.000Z",
+                                            endTime: "2026-03-15T16:00:00.000Z",
+                                            type: "Workshop",
+                                            isOnline: false,
+                                            location: "Ruang Seminar Lt.3",
+                                            price: 100000,
+                                            quota: 50,
+                                            status: "published",
+                                            isPublic: true,
+                                            registrationFormSchema: [
+                                                { key: "portfolio", label: "Link Portfolio", type: "text", required: false }
+                                            ],
+                                            organizerId: "user_admin_123",
+                                            createdAt: "2026-01-05T08:00:00.000Z"
+                                        }
+                                    ]
                                 }
                             }
                         }
