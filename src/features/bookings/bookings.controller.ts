@@ -3,7 +3,65 @@ import { bookingService } from './bookings.service.ts';
 import { authMiddleware, requireRole } from '../../middlewares/auth.middleware.ts';
 
 export const bookingsController = new Elysia({ prefix: '/bookings' })
-  .use(authMiddleware) // All routes require login
+  // .use(authMiddleware) -- Moved auth to specific routes or sub-groups if needed.
+  // Actually, standard practice: Public routes first, then auth group.
+  
+  /**
+   * GET /bookings/schedule/:ruanganId
+   * Public: Check room schedule
+   */
+  .get('/schedule/:ruanganId', async ({ params, query }) => {
+    try {
+        const date = query.date ? new Date(query.date) : new Date();
+        const schedule = await bookingService.getRoomSchedule(params.ruanganId, date, date);
+        return { success: true, data: schedule };
+    } catch (error: any) {
+        return { success: false, error: error.message };
+    }
+  }, {
+    query: t.Object({
+        date: t.Optional(t.String()) // YYYY-MM-DD
+    }),
+    detail: { tags: ['Bookings'], summary: 'Public: Room Schedule' }
+  })
+
+  /**
+   * GET /bookings/check-availability
+   * Public: Check specific slot availability
+   */
+  .get('/check-availability', async ({ query }) => {
+      try {
+          const start = new Date(query.startTime);
+          const end = new Date(query.endTime);
+          
+          if (isNaN(start.getTime()) || isNaN(end.getTime())) throw new Error('Invalid dates');
+          
+          const isAvailable = await bookingService.checkAvailability(query.ruanganId, start, end);
+          
+          // Check operating hours warning
+          const isStandardHours = bookingService.isWithinOperatingHours(start, end);
+
+          return { 
+              success: true, 
+              available: isAvailable, 
+              isStandardHours,
+              message: isAvailable 
+                ? (isStandardHours ? 'Available' : 'Available (Outside Standard Hours 08:00-16:00)')
+                : 'Not Available'
+          };
+      } catch (error: any) {
+          return { success: false, error: error.message };
+      }
+  }, {
+      query: t.Object({
+          ruanganId: t.String(),
+          startTime: t.String(),
+          endTime: t.String()
+      }),
+      detail: { tags: ['Bookings'], summary: 'Public: Check Availability Slot' }
+  })
+
+  .use(authMiddleware) // All subsequent routes require login
 
   /**
    * GET /bookings

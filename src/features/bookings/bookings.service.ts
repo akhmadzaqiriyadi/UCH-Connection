@@ -16,19 +16,9 @@ export class BookingService {
       throw new Error('Start time must be before end time');
     }
 
-    // Check Availability (Overlap Logic)
-    // Overlap if: (NewStart < ExistingEnd) AND (NewEnd > ExistingStart)
-    const overlap = await db.query.bookings.findFirst({
-      where: (table, { and, eq, lt, gt, ne }) => and(
-        eq(table.ruanganId, data.ruanganId),
-        ne(table.status, 'rejected'), // Ignore rejected
-        ne(table.status, 'cancelled'), // Ignore cancelled
-        lt(table.startTime, end),
-        gt(table.endTime, start)
-      ),
-    });
-
-    if (overlap) {
+    // Check Availability
+    const isAvailable = await this.checkAvailability(data.ruanganId, start, end);
+    if (!isAvailable) {
       throw new Error('Room is already booked for the selected time slot');
     }
 
@@ -46,6 +36,81 @@ export class BookingService {
     // For now, silently succeed. User waits for approval.
 
     return newBooking;
+  }
+
+  /**
+   * Get Room Schedule (Public)
+   * Returns list of APPROVED bookings for a specific room and date range
+   */
+  async getRoomSchedule(ruanganId: string, startDate: Date, endDate: Date) {
+    // Determine bounds
+    const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
+    
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    const schedule = await db.query.bookings.findMany({
+      where: (table, { and, eq, gte, lte, or }) => and(
+        eq(table.ruanganId, ruanganId),
+        or(eq(table.status, 'approved'), eq(table.status, 'checked_in')), // Only active bookings
+        // Overlap with the day range
+        and(
+            gte(table.endTime, start),
+            lte(table.startTime, end)
+        )
+      ),
+      with: {
+        user: true // Maybe sanitize this in controller
+      },
+      orderBy: (table, { asc }) => [asc(table.startTime)]
+    });
+
+    return schedule.map(b => ({
+      id: b.id,
+      title: 'Booked', // Privacy: Don't show purpose/user public? Or show? Let's show "Booked by X" or just "Booked"
+      start: b.startTime,
+      end: b.endTime,
+      status: b.status,
+      organizer: b.user.fullName // Show organizer
+    }));
+  }
+
+  /**
+   * Check if slot is available
+   */
+  async checkAvailability(ruanganId: string, startTime: Date, endTime: Date): Promise<boolean> {
+     const overlap = await db.query.bookings.findFirst({
+      where: (table, { and, eq, lt, gt, ne, or }) => and(
+        eq(table.ruanganId, ruanganId),
+        or(eq(table.status, 'pending'), eq(table.status, 'approved'), eq(table.status, 'checked_in')), // Count pending as blocked? Or only approved?
+        // Usually, pending requests block the slot until rejected to prevent double booking race conditions.
+        // Let's assume PENDING also reserves the slot temporarily.
+        lt(table.startTime, endTime),
+        gt(table.endTime, startTime)
+      ),
+    });
+    
+    return !overlap;
+  }
+
+  /**
+   * Validate Operating Hours (08:00 - 16:00)
+   * This is a soft check helper.
+   */
+  isWithinOperatingHours(startTime: Date, endTime: Date): boolean {
+    const startHour = startTime.getHours();
+    const endHour = endTime.getHours();
+    const endMinutes = endTime.getMinutes();
+
+    // 08:00
+    if (startHour < 8) return false;
+
+    // 16:00 (End time must be <= 16:00)
+    // If endHour is 16, minutes must be 0
+    if (endHour > 16 || (endHour === 16 && endMinutes > 0)) return false;
+
+    return true;
   }
 
   /**
