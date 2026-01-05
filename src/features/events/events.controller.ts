@@ -144,6 +144,13 @@ export const eventsController = new Elysia({ prefix: '/events' })
             const payload = await jwt.verify(token);
             if (!payload) throw new Error('Invalid Token');
             
+            // Authorization Check: Only Admin, Dosen, Staff can create events
+            // Mahasiswa (UKM/Hima) permissions can be added later
+            const allowedRoles = ['admin', 'dosen', 'staff'];
+            if (!allowedRoles.includes(payload.role)) {
+                throw new Error('Forbidden: Only Admin/Staff can create events');
+            }
+
             // Organizer is the creator
             const data = await eventsService.create(payload.userId, body);
             return { success: true, data };
@@ -170,6 +177,12 @@ export const eventsController = new Elysia({ prefix: '/events' })
             const token = authHeader.replace('Bearer ', '');
             const payload = await jwt.verify(token);
             if (!payload) throw new Error('Invalid Token');
+
+            // Authorization: Admin Only
+            // Ideally should check if user is the organizer of this specific event
+            if (payload.role !== 'admin' && payload.role !== 'staff') {
+                throw new Error('Forbidden: Only Admin/Staff can verify payments');
+            }
 
             const status = body.status;
             const updated = await eventsService.verifyPayment(params.id, status as 'paid' | 'rejected');
