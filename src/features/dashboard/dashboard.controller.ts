@@ -6,10 +6,14 @@ import { count, isNull, eq, desc } from 'drizzle-orm';
 
 export const dashboardController = new Elysia({ prefix: '/dashboard' })
   .use(authMiddleware)
-  .use(requireRole('admin'))
 
   // Get Stats
-  .get('/stats', async () => {
+  .get('/stats', async ({ user }: any) => {
+    // Role Check
+    if (user.role !== 'admin') {
+      throw new Error('Forbidden: Admin only');
+    }
+
     // Parallel queries for speed
     const [
       [usersCount],
@@ -117,7 +121,12 @@ export const dashboardController = new Elysia({ prefix: '/dashboard' })
   })
 
   // Get Events Stats
-  .get('/events-stats', async () => {
+  .get('/events-stats', async ({ user }: any) => {
+    // Role Check
+    if (user.role !== 'admin') {
+      throw new Error('Forbidden: Admin only');
+    }
+
     const { events, eventRegistrants } = await import('../../db/schema');
     const { gte, lte } = await import('drizzle-orm');
 
