@@ -228,4 +228,51 @@ else
     echo $REGISTRANTS_RES
 fi
 
+
+# ========================================================
+# CASE 6: USER JOURNEY (Mahasiswa)
+# ========================================================
+echo -e "\n${YELLOW}🧪 CASE 6: User Journey (Mahasiswa)${NC}"
+
+# 6.1 Login as Mahasiswa (Using Token from Case 3)
+echo "   verifying mahasiswa token..."
+if [ "$MHS_TOKEN" == "null" ] || [ -z "$MHS_TOKEN" ]; then
+    echo -e "${RED}   ❌ Mahasiswa Token Missing (Login failed in Case 3)${NC}"
+    exit 1
+fi
+
+# 6.2 Register to Free Event (As Authenticated User)
+echo "   registering as Auth User to Free Event..."
+# Note: For Auth User, guestName/Email is NOT required. UserId is taken from token.
+USER_REG_RES=$(curl -s -X POST "$BASE_URL/events/$FREE_EVENT_ID/register" \
+  -H "Authorization: Bearer $MHS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "{}")
+
+USER_PAYMENT_STATUS=$(echo $USER_REG_RES | jq -r '.data.paymentStatus')
+USER_HAS_QR=$(echo $USER_REG_RES | jq -r '.data.qrToken != null')
+
+if [ "$USER_PAYMENT_STATUS" == "free" ] && [ "$USER_HAS_QR" == "true" ]; then
+    echo -e "${GREEN}   ✅ User Registration Success! (QR Generated)${NC}"
+else
+    echo -e "${RED}   ❌ User Registration Failed${NC}"
+    echo $USER_REG_RES
+fi
+
+# 6.3 Check My Tickets
+echo "   checking 'My Tickets'..."
+MY_TICKETS_RES=$(curl -s -X GET "$BASE_URL/events/me/tickets" \
+  -H "Authorization: Bearer $MHS_TOKEN")
+
+TICKET_COUNT=$(echo $MY_TICKETS_RES | jq -r '.data | length')
+FIRST_TICKET_TITLE=$(echo $MY_TICKETS_RES | jq -r '.data[0].event.title')
+
+if [ "$TICKET_COUNT" -gt 0 ]; then
+    echo -e "${GREEN}   ✅ My Tickets OK! Found $TICKET_COUNT ticket(s).${NC}"
+    echo -e "      User has ticket for: $FIRST_TICKET_TITLE"
+else
+    echo -e "${RED}   ❌ My Tickets Empty (Expected at least 1)${NC}"
+    echo $MY_TICKETS_RES
+fi
+
 echo -e "\n🎉 All Scenarios Completed!"

@@ -36,7 +36,26 @@ export const eventsController = new Elysia({ prefix: '/events' })
                                 type: 'object',
                                 properties: {
                                     success: { type: 'boolean', example: true },
-                                    data: { type: 'array', items: { type: 'object', example: { id: 'evt_123', title: 'Seminar IT', price: 50000, quota: 100 } } }
+                                    data: { 
+                                        type: 'array', 
+                                        items: { 
+                                            type: 'object', 
+                                            example: { 
+                                                id: 'evt_123', 
+                                                title: 'Workshop Backend Modern', 
+                                                description: 'Belajar membuat REST API dengan ElysiaJS',
+                                                bannerImage: '/uploads/events/banner-1.jpg',
+                                                startTime: '2026-02-20T09:00:00.000Z',
+                                                endTime: '2026-02-20T16:00:00.000Z',
+                                                type: 'Workshop',
+                                                isOnline: false,
+                                                location: 'Lab Komputer 3, Kampus 1',
+                                                price: 50000, 
+                                                quota: 100,
+                                                organizer: { fullName: 'Himpunan Mahasiswa Informatika' }
+                                            } 
+                                        } 
+                                    }
                                 }
                             }
                         }
@@ -118,7 +137,19 @@ export const eventsController = new Elysia({ prefix: '/events' })
                                 type: 'object',
                                 example: {
                                     success: true,
-                                    data: [{ event: { title: "Seminar A" }, qrToken: "xyz" }]
+                                    data: [{ 
+                                        id: "reg_999",
+                                        paymentStatus: "paid",
+                                        qrToken: "uuid-qr-token-secret",
+                                        checkedInAt: null,
+                                        event: { 
+                                            title: "Seminar Teknologi AI", 
+                                            bannerImage: "/uploads/events/ai.jpg",
+                                            startTime: "2026-04-05T09:00:00.000Z",
+                                            endTime: "2026-04-05T12:00:00.000Z",
+                                            location: "Zoom Meeting"
+                                        } 
+                                    }]
                                 }
                             }
                         }
@@ -155,8 +186,21 @@ export const eventsController = new Elysia({ prefix: '/events' })
                                     success: true,
                                     data: {
                                         id: "evt_123",
-                                        title: "Workshop",
-                                        registrationFormSchema: [{ key: "size", label: "Ukuran Kaos", type: "text" }]
+                                        title: "Workshop Backend Modern",
+                                        description: "Belajar membuat REST API dengan ElysiaJS",
+                                        bannerImage: "/uploads/events/banner-1.jpg",
+                                        startTime: "2026-02-20T09:00:00.000Z",
+                                        endTime: "2026-02-20T16:00:00.000Z",
+                                        type: "Workshop",
+                                        isOnline: false,
+                                        location: "Lab Komputer 3, Kampus 1",
+                                        price: 50000, 
+                                        quota: 100,
+                                        registrationFormSchema: [
+                                            { key: "size", label: "Ukuran Kaos", type: "select", options: ["S","M","L","XL"], required: true },
+                                            { key: "github", label: "Username GitHub", type: "text", required: true }
+                                        ],
+                                        organizer: { fullName: "Himpunan Mahasiswa Informatika", email: "hmif@uty.ac.id" }
                                     }
                                 }
                             }
