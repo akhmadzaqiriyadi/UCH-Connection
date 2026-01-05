@@ -1,6 +1,6 @@
 import { Elysia, t } from 'elysia';
 import { db } from '../../db';
-import { users, mahasiswa, dosen, ukm, himpunan } from '../../db/schema';
+import { users, mahasiswa, dosen, ukm, himpunan, bookings } from '../../db/schema';
 import { authMiddleware, requireRole } from '../../middlewares/auth.middleware';
 import { count, isNull } from 'drizzle-orm';
 
@@ -16,13 +16,15 @@ export const dashboardController = new Elysia({ prefix: '/dashboard' })
       [mahasiswaCount],
       [dosenCount],
       [ukmCount],
-      [himpunanCount]
+      [himpunanCount],
+      [bookingsCount]
     ] = await Promise.all([
       db.select({ count: count() }).from(users).where(isNull(users.deletedAt)),
       db.select({ count: count() }).from(mahasiswa).where(isNull(mahasiswa.deletedAt)),
       db.select({ count: count() }).from(dosen).where(isNull(dosen.deletedAt)),
       db.select({ count: count() }).from(ukm).where(isNull(ukm.deletedAt)),
-      db.select({ count: count() }).from(himpunan).where(isNull(himpunan.deletedAt))
+      db.select({ count: count() }).from(himpunan).where(isNull(himpunan.deletedAt)),
+      db.select({ count: count() }).from(bookings) // Total Bookings
     ]);
 
     return {
@@ -32,7 +34,8 @@ export const dashboardController = new Elysia({ prefix: '/dashboard' })
         totalMahasiswa: mahasiswaCount.count,
         totalDosen: dosenCount.count,
         totalUKM: ukmCount.count,
-        totalHimpunan: himpunanCount.count
+        totalHimpunan: himpunanCount.count,
+        totalBookings: bookingsCount.count
       }
     };
   }, {
