@@ -17,6 +17,7 @@ import { masterController } from './features/master/master.controller.ts';
 import { dashboardController } from './features/dashboard/dashboard.controller.ts';
 import { ruanganController } from './features/ruangan/ruangan.controller.ts';
 import { bookingsController } from './features/bookings/bookings.controller.ts';
+import { eventsController } from './features/events/events.controller.ts';
 
 // Create app with logging
 const app = loggingMiddleware(new Elysia())
@@ -51,6 +52,7 @@ const app = loggingMiddleware(new Elysia())
               { name: 'Dashboard', description: 'Admin Statistics (Admin only)' },
               { name: 'Ruangan', description: 'Room Master Data Management' },
               { name: 'Bookings', description: 'Room Booking System' },
+              { name: 'Events', description: 'Event Management & Ticketing' },
             ],
           },
           scalarConfig: {
@@ -72,6 +74,7 @@ const app = loggingMiddleware(new Elysia())
       .use(dashboardController)
       .use(ruanganController)
       .use(bookingsController)
+      .use(eventsController)
   )
   
   .listen(config.port);

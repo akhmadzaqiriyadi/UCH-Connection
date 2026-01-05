@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, timestamp, text, integer, pgEnum } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, varchar, timestamp, text, integer, pgEnum, json, boolean, decimal } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 // Enums
@@ -149,8 +149,91 @@ export const checkins = pgTable('checkins', {
   checkedInBy: uuid('checked_in_by').references(() => users.id), // Optional: who scanned it?
 });
 
+// Events
+export const events = pgTable('events', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  title: varchar('title', { length: 255 }).notNull(),
+  description: text('description'),
+  bannerImage: varchar('banner_image', { length: 255 }),
+  
+  // Schedule
+  startTime: timestamp('start_time').notNull(),
+  endTime: timestamp('end_time').notNull(),
+  
+  // Details
+  type: varchar('type', { length: 50 }).notNull(), // seminar, workshop, etc
+  isOnline: boolean('is_online').default(false),
+  location: varchar('location', { length: 255 }), // address or link
+  
+  // Registration Flow
+  price: decimal('price', { precision: 10, scale: 2 }).default('0'),
+  quota: integer('quota').notNull(),
+  isPublic: boolean('is_public').default(false), // Allow guest registration
+  
+  // Dynamic Form Schema
+  // Example: [{ key: "size", label: "T-Shirt Size", type: "select", options: ["S","M"] }]
+  registrationFormSchema: json('registration_form_schema'),
+  
+  // Organizer
+  organizerId: uuid('organizer_id').references(() => users.id),
+  
+  status: varchar('status', { length: 20 }).default('published'), // draft, published, cancelled, ended
+  
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+// Event Registrants
+export const eventRegistrants = pgTable('event_registrants', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  eventId: uuid('event_id').references(() => events.id).notNull(),
+  
+  // User Link (Optional for Guest)
+  userId: uuid('user_id').references(() => users.id),
+  
+  // Guest Info (If userId is null)
+  guestName: varchar('guest_name', { length: 255 }),
+  guestEmail: varchar('guest_email', { length: 255 }),
+  guestPhone: varchar('guest_phone', { length: 50 }),
+  
+  // Dynamic Form Answers
+  // Example: { "size": "M", "github": "..." }
+  registrationData: json('registration_data'),
+  
+  // Payment
+  paymentStatus: varchar('payment_status', { length: 20 }).default('free'), // free, pending, paid, rejected
+  paymentProof: varchar('payment_proof', { length: 255 }), // Image path
+  
+  // Check-in
+  status: varchar('status', { length: 20 }).default('registered'), // registered, attended, cancelled
+  qrToken: varchar('qr_token', { length: 255 }).unique(),
+  checkedInAt: timestamp('checked_in_at'),
+  
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
 // Relations
-export const usersRelations = relations(users, ({ one }) => ({
+export const eventsRelations = relations(events, ({ one, many }) => ({
+  organizer: one(users, {
+    fields: [events.organizerId],
+    references: [users.id],
+  }),
+  registrants: many(eventRegistrants),
+}));
+
+export const eventRegistrantsRelations = relations(eventRegistrants, ({ one }) => ({
+  event: one(events, {
+    fields: [eventRegistrants.eventId],
+    references: [events.id],
+  }),
+  user: one(users, {
+    fields: [eventRegistrants.userId],
+    references: [users.id],
+  }),
+}));
+
+export const usersRelations = relations(users, ({ one, many }) => ({
   mahasiswa: one(mahasiswa, {
     fields: [users.id],
     references: [mahasiswa.userId],
