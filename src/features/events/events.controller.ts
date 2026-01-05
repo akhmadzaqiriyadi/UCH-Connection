@@ -602,7 +602,26 @@ export const eventsController = new Elysia({ prefix: '/events' })
                                 type: 'object',
                                 example: {
                                     success: true,
-                                    data: { valid: true, guestName: "Budi", eventName: "Seminar" }
+                                    data: {
+                                        valid: true,
+                                        message: "Check-in successful",
+                                        checkedInAt: "2026-01-05T10:30:00.000Z",
+                                        registrant: {
+                                            id: "reg_123",
+                                            name: "Budi Santoso",
+                                            email: "budi@uch.ac.id",
+                                            phone: "08123456789",
+                                            registrationData: { size: "L", dietary: "Vegetarian" }
+                                        },
+                                        event: {
+                                            id: "evt_456",
+                                            title: "Seminar Teknologi AI",
+                                            startTime: "2026-04-05T09:00:00.000Z",
+                                            endTime: "2026-04-05T12:00:00.000Z",
+                                            location: "Auditorium Kampus 1",
+                                            type: "Seminar"
+                                        }
+                                    }
                                 }
                             }
                         }

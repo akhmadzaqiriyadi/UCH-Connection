@@ -224,7 +224,7 @@ export class EventsService {
             where: eq(eventRegistrants.qrToken, qrToken),
             with: {
                 event: true,
-                user: { columns: { fullName: true } }
+                user: { columns: { fullName: true, email: true, role: true } }
             }
         });
 
@@ -234,18 +234,35 @@ export class EventsService {
 
         // Check if event is today? (Optional logic)
 
+        const now = new Date();
+        
         // Update status
         await db.update(eventRegistrants)
             .set({ 
                 status: 'attended',
-                checkedInAt: new Date()
+                checkedInAt: now
             })
             .where(eq(eventRegistrants.id, registrant.id));
 
         return {
             valid: true,
-            guestName: registrant.guestName || registrant.user?.fullName,
-            eventName: registrant.event.title
+            message: 'Check-in successful',
+            checkedInAt: now,
+            registrant: {
+                id: registrant.id,
+                name: registrant.guestName || registrant.user?.fullName,
+                email: registrant.guestEmail || registrant.user?.email,
+                phone: registrant.guestPhone,
+                registrationData: registrant.registrationData
+            },
+            event: {
+                id: registrant.event.id,
+                title: registrant.event.title,
+                startTime: registrant.event.startTime,
+                endTime: registrant.event.endTime,
+                location: registrant.event.location,
+                type: registrant.event.type
+            }
         };
     }
 }
