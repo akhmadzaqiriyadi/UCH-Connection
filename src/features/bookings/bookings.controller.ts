@@ -203,8 +203,12 @@ export const bookingsController = new Elysia({ prefix: '/bookings' })
      * POST /bookings
      * Create Booking Request
      */
-    .post('/', async ({ user, body }: any) => {
+    .post('/', async (context: any) => {
         try {
+            const { user, body } = context;
+            console.log('DEBUG FULL CONTEXT KEYS:', Object.keys(context));
+            console.log('DEBUG USER VALUE:', user);
+            
             if (!user) throw new Error('User context missing');
             const data = await bookingService.create(user.userId, body);
             return { success: true, data };
