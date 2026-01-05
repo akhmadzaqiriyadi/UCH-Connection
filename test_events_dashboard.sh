@@ -19,7 +19,7 @@ echo "----------------------------------------"
 echo -e "\n🔑 [1] Logging in as Admin..."
 LOGIN_RES=$(curl -s -X POST "$BASE_URL/auth/login" \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@uch.ac.id","password":"admin123"}')
+  -d '{"email":"admin@uty.ac.id","password":"password123"}')
 
 TOKEN=$(echo $LOGIN_RES | jq -r '.data.accessToken')
 

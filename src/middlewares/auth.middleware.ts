@@ -42,12 +42,12 @@ export const authMiddleware = new Elysia({ name: 'auth' })
 
 /**
  * Role-based access control middleware
+ * MUST be used AFTER authMiddleware
  */
 export const requireRole = (...allowedRoles: string[]) => {
   return new Elysia()
-    .use(authMiddleware)
     .derive(({ user, set }: any) => {
-      if (!allowedRoles.includes(user.role)) {
+      if (!user || !allowedRoles.includes(user.role)) {
         set.status = 403;
         throw new Error('Forbidden: Insufficient permissions');
       }
