@@ -22,7 +22,38 @@ export const bookingsController = new Elysia({ prefix: '/bookings' })
     query: t.Object({
         date: t.Optional(t.String()) // YYYY-MM-DD
     }),
-    detail: { tags: ['Bookings'], summary: 'Public: Room Schedule' }
+    detail: {
+      tags: ['Bookings'],
+      summary: 'Public: Room Schedule',
+      description: 'Get list of approved bookings for calendar view',
+      responses: {
+        200: {
+          description: 'Schedule List',
+          content: {
+            'application/json': {
+              examples: {
+                success: {
+                    summary: 'Success',
+                    value: {
+                        success: true,
+                        data: [
+                            {
+                                id: '123-abc',
+                                title: 'Booked',
+                                start: '2026-01-05T09:00:00.000Z',
+                                end: '2026-01-05T11:00:00.000Z',
+                                status: 'approved',
+                                organizer: 'John Doe'
+                            }
+                        ]
+                    }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   })
 
   /**
@@ -58,7 +89,91 @@ export const bookingsController = new Elysia({ prefix: '/bookings' })
           startTime: t.String(),
           endTime: t.String()
       }),
-      detail: { tags: ['Bookings'], summary: 'Public: Check Availability Slot' }
+      detail: {
+      tags: ['Bookings'],
+      summary: 'Public: Check Availability Slot',
+      description: 'Check if a specific time range is available',
+      responses: {
+        200: {
+          description: 'Availability Result',
+          content: {
+            'application/json': {
+              examples: {
+                available: {
+                    summary: 'Available (Standard)',
+                    value: {
+                        success: true,
+                        available: true,
+                        isStandardHours: true,
+                        message: 'Available'
+                    }
+                },
+                blocked: {
+                    summary: 'Not Available',
+                    value: {
+                        success: true,
+                        available: false,
+                        isStandardHours: true,
+                        message: 'Not Available'
+                    }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  })
+
+  /**
+   * GET /bookings/slots
+   * Public: Get available time slots for dropdown
+   */
+  .get('/slots', async ({ query }) => {
+      try {
+          const date = new Date(query.date); // YYYY-MM-DD
+          const duration = query.duration ? parseInt(query.duration) : 60; // Minutes
+          
+          if (isNaN(date.getTime())) throw new Error('Invalid date');
+
+          const slots = await bookingService.getAvailableSlots(query.ruanganId, date, duration);
+          return { success: true, data: slots };
+      } catch (error: any) {
+          return { success: false, error: error.message };
+      }
+  }, {
+      query: t.Object({
+          ruanganId: t.String(),
+          date: t.String(),
+          duration: t.Optional(t.String())
+      }),
+      detail: {
+        tags: ['Bookings'],
+        summary: 'Public: Get Available Slots Dropdown',
+        description: 'Get clean list of available start times for a given duration. Filters out blocked slots.',
+        responses: {
+            200: {
+                description: 'List of Time Slots',
+                content: {
+                    'application/json': {
+                        examples: {
+                            success: {
+                                summary: 'Slots List',
+                                value: {
+                                    success: true,
+                                    data: [
+                                        { time: '08.00', available: true },
+                                        { time: '09.00', available: true },
+                                        { time: '13.00', available: true }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+      }
   })
 
   .use(authMiddleware) // All subsequent routes require login

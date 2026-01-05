@@ -88,6 +88,24 @@ export const ruanganController = new Elysia({ prefix: '/ruangan' })
       detail: {
         tags: ['Ruangan'],
         summary: 'Create Ruangan (Admin)',
+        responses: {
+            201: {
+                description: 'Created',
+                content: {
+                    'application/json': {
+                        examples: {
+                            success: {
+                                summary: 'Success',
+                                value: { 
+                                    success: true, 
+                                    data: { id: 'new-id', kode: 'A.3.1', nama: 'New Room' } 
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
       }
     })
 
@@ -115,6 +133,24 @@ export const ruanganController = new Elysia({ prefix: '/ruangan' })
       detail: {
         tags: ['Ruangan'],
         summary: 'Update Ruangan (Admin)',
+        responses: {
+            200: {
+                description: 'Updated',
+                content: {
+                    'application/json': {
+                        examples: {
+                            success: {
+                                summary: 'Success',
+                                value: { 
+                                    success: true, 
+                                    data: { id: 'x', kode: 'A.3.1', nama: 'Updated Name', status: 'maintenance' } 
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
       }
     })
 
@@ -133,6 +169,21 @@ export const ruanganController = new Elysia({ prefix: '/ruangan' })
       detail: {
         tags: ['Ruangan'],
         summary: 'Delete Ruangan (Admin)',
+        responses: {
+            200: {
+                description: 'Deleted',
+                content: {
+                    'application/json': {
+                        examples: {
+                            success: {
+                                summary: 'Success',
+                                value: { success: true, message: 'Ruangan deleted successfully' } 
+                            }
+                        }
+                    }
+                }
+            }
+        }
       }
     })
   );

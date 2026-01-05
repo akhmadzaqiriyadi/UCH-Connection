@@ -95,6 +95,75 @@ export class BookingService {
   }
 
   /**
+   * Generate Available Time Slots
+   * Returns list of start times that are available for a given duration
+   */
+  async getAvailableSlots(ruanganId: string, date: Date, durationMinutes: number = 60) {
+    // 1. Define Operating Hours (08:00 - 16:00)
+    // In future this could be dynamic per room/day
+    const startHour = 8;
+    const endHour = 16;
+
+    // 2. Get all existing bookings for that day
+    const dayStart = new Date(date);
+    dayStart.setHours(0,0,0,0);
+    const dayEnd = new Date(date);
+    dayEnd.setHours(23,59,59,999);
+
+    const existingBookings = await db.query.bookings.findMany({
+      where: (table, { and, eq, gte, lte, or }) => and(
+        eq(table.ruanganId, ruanganId),
+        or(eq(table.status, 'pending'), eq(table.status, 'approved'), eq(table.status, 'checked_in')),
+        and(gte(table.endTime, dayStart), lte(table.startTime, dayEnd))
+      ),
+      orderBy: (table, { asc }) => [asc(table.startTime)]
+    });
+
+    // 3. Generate Slots
+    // Slot interval: 30 minutes? 60 minutes? Let's use 30 mins granularity for flexibility
+    // But duration is fixed.
+    const interval = 60; // Offer slots every hour (e.g. 08:00, 09:00). Or 30? Let's stick to 60 for simplicity unless requested.
+    
+    const slots: { time: string, available: boolean }[] = [];
+    
+    let current = new Date(date);
+    current.setHours(startHour, 0, 0, 0);
+
+    const closeTime = new Date(date);
+    closeTime.setHours(endHour, 0, 0, 0);
+
+    while (current < closeTime) {
+        // Calculate potential end time for this slot
+        const slotStart = new Date(current);
+        const slotEnd = new Date(current.getTime() + durationMinutes * 60000);
+
+        // Check if slotEnd exceeds operational hours
+        if (slotEnd > closeTime) {
+            break; 
+        }
+
+        // Check availability against existing bookings
+        // Overlap Logic: (StartA < EndB) && (EndA > StartB)
+        const isBlocked = existingBookings.some(b => {
+            const bStart = new Date(b.startTime);
+            const bEnd = new Date(b.endTime);
+            return (slotStart < bEnd && slotEnd > bStart);
+        });
+
+        if (!isBlocked) {
+            // Format HH:mm
+            const timeStr = slotStart.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+            slots.push({ time: timeStr, available: true });
+        }
+
+        // Move to next interval
+        current.setMinutes(current.getMinutes() + interval);
+    }
+
+    return slots;
+  }
+
+  /**
    * Validate Operating Hours (08:00 - 16:00)
    * This is a soft check helper.
    */
