@@ -269,9 +269,20 @@ export const eventsController = new Elysia({ prefix: '/events' })
                                     success: true,
                                     data: {
                                         id: "reg_123",
+                                        eventId: "evt_456",
+                                        userId: "user_789",
+                                        guestName: null,
+                                        guestEmail: null,
+                                        guestPhone: null,
+                                        registrationData: { size: "L", dietary: "Vegetarian" },
                                         paymentStatus: "pending",
-                                        needPayment: true,
-                                        qrToken: null
+                                        paymentProof: null,
+                                        status: "registered",
+                                        qrToken: null,
+                                        checkedInAt: null,
+                                        createdAt: "2026-01-05T10:30:00.000Z",
+                                        eventTitle: "Workshop Backend Modern",
+                                        needPayment: true
                                     }
                                 }
                             }
@@ -318,7 +329,21 @@ export const eventsController = new Elysia({ prefix: '/events' })
                                 type: 'object',
                                 example: {
                                     success: true,
-                                    data: { paymentProof: "/uploads/payments/xyz.jpg" }
+                                    data: {
+                                        id: "reg_123",
+                                        eventId: "evt_456",
+                                        userId: "user_789",
+                                        guestName: null,
+                                        guestEmail: null,
+                                        guestPhone: null,
+                                        registrationData: { size: "L" },
+                                        paymentStatus: "pending",
+                                        paymentProof: "/uploads/payments/proof-abc123.jpg",
+                                        status: "registered",
+                                        qrToken: null,
+                                        checkedInAt: null,
+                                        createdAt: "2026-01-05T10:30:00.000Z"
+                                    }
                                 }
                             }
                         }
@@ -417,7 +442,44 @@ export const eventsController = new Elysia({ prefix: '/events' })
                                 type: 'object',
                                 example: {
                                     success: true,
-                                    data: [{ user: { fullName: "Budi" }, paymentStatus: "pending", paymentProof: "/img.jpg" }]
+                                    data: [
+                                        {
+                                            id: "reg_001",
+                                            eventId: "evt_456",
+                                            userId: "user_111",
+                                            guestName: null,
+                                            guestEmail: null,
+                                            guestPhone: null,
+                                            registrationData: { size: "M", allergies: "None" },
+                                            paymentStatus: "pending",
+                                            paymentProof: "/uploads/payments/transfer-001.jpg",
+                                            status: "registered",
+                                            qrToken: null,
+                                            checkedInAt: null,
+                                            createdAt: "2026-01-05T08:00:00.000Z",
+                                            user: {
+                                                fullName: "Budi Santoso",
+                                                email: "budi@uch.ac.id",
+                                                role: "mahasiswa"
+                                            }
+                                        },
+                                        {
+                                            id: "reg_002",
+                                            eventId: "evt_456",
+                                            userId: null,
+                                            guestName: "Ahmad Guest",
+                                            guestEmail: "ahmad@gmail.com",
+                                            guestPhone: "08123456789",
+                                            registrationData: { size: "L" },
+                                            paymentStatus: "paid",
+                                            paymentProof: "/uploads/payments/transfer-002.jpg",
+                                            status: "registered",
+                                            qrToken: "qr-token-uuid-abc",
+                                            checkedInAt: null,
+                                            createdAt: "2026-01-05T09:15:00.000Z",
+                                            user: null
+                                        }
+                                    ]
                                 }
                             }
                         }
@@ -466,7 +528,21 @@ export const eventsController = new Elysia({ prefix: '/events' })
                                 type: 'object',
                                 example: {
                                     success: true,
-                                    data: { status: "registered", qrToken: "uuid-token" }
+                                    data: {
+                                        id: "reg_123",
+                                        eventId: "evt_456",
+                                        userId: "user_789",
+                                        guestName: null,
+                                        guestEmail: null,
+                                        guestPhone: null,
+                                        registrationData: { size: "L" },
+                                        paymentStatus: "paid",
+                                        paymentProof: "/uploads/payments/proof-abc.jpg",
+                                        status: "registered",
+                                        qrToken: "qr-uuid-generated-token",
+                                        checkedInAt: null,
+                                        createdAt: "2026-01-05T10:30:00.000Z"
+                                    }
                                 }
                             }
                         }
