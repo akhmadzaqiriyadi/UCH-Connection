@@ -206,4 +206,26 @@ else
     echo $INVALID_REG_RES
 fi
 
+
+# ========================================================
+# CASE 5: ADMIN VIEW REGISTRANTS
+# ========================================================
+echo -e "\n${YELLOW}🧪 CASE 5: Admin View Registrants${NC}"
+
+# 5.1 Get Registrants of the Free Event (Case 1)
+echo "   fetching registrants list..."
+REGISTRANTS_RES=$(curl -s -X GET "$BASE_URL/events/$FREE_EVENT_ID/registrants" \
+  -H "Authorization: Bearer $TOKEN")
+
+IS_SUCCESS=$(echo $REGISTRANTS_RES | jq -r '.success')
+DATA_COUNT=$(echo $REGISTRANTS_RES | jq -r '.data | length')
+
+if [ "$IS_SUCCESS" == "true" ]; then
+    echo -e "${GREEN}   ✅ SUCCESS: Admin can view registrants (Count: $DATA_COUNT)${NC}"
+    # Optional: Check if guest name exists in response
+else
+    echo -e "${RED}   ❌ FAILED: Get Registrants failed${NC}"
+    echo $REGISTRANTS_RES
+fi
+
 echo -e "\n🎉 All Scenarios Completed!"

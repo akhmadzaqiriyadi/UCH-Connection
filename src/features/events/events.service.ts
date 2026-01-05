@@ -169,6 +169,53 @@ export class EventsService {
         return updated;
     }
 
+    
+    /**
+     * Get Registrants of an Event (For Organizer)
+     */
+    async getRegistrants(eventId: string) {
+        return db.query.eventRegistrants.findMany({
+            where: eq(eventRegistrants.eventId, eventId),
+            orderBy: [desc(eventRegistrants.createdAt)],
+            with: {
+                user: {
+                    columns: { fullName: true, email: true, role: true }
+                }
+            }
+        });
+    }
+
+    /**
+     * Get Events created by Organizer
+     */
+    async getOwnedEvents(organizerId: string) {
+        return db.query.events.findMany({
+            where: eq(events.organizerId, organizerId),
+            orderBy: [desc(events.createdAt)]
+        });
+    }
+
+    /**
+     * Get My Tickets (Events I registered to)
+     */
+    async getMyTickets(userId: string) {
+        return db.query.eventRegistrants.findMany({
+            where: eq(eventRegistrants.userId, userId),
+            orderBy: [desc(eventRegistrants.createdAt)],
+            with: {
+                event: {
+                    columns: { 
+                        title: true, 
+                        startTime: true, 
+                        endTime: true, 
+                        location: true, 
+                        bannerImage: true 
+                    }
+                }
+            }
+        });
+    }
+
     /**
      * Check-in (Scan QR)
      */

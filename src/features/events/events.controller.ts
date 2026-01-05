@@ -47,6 +47,88 @@ export const eventsController = new Elysia({ prefix: '/events' })
     })
 
     /**
+     * GET /events/manage/owned
+     * List Events Created by Me (Organizer)
+     */
+    .get('/manage/owned', async ({ headers, jwt }: any) => {
+        try {
+            const authHeader = headers.authorization;
+            if (!authHeader || !authHeader.startsWith('Bearer ')) throw new Error('Unauthorized');
+            const token = authHeader.replace('Bearer ', '');
+            const payload = await jwt.verify(token);
+            if (!payload) throw new Error('Invalid Token');
+
+            const data = await eventsService.getOwnedEvents(payload.userId);
+            return { success: true, data };
+        } catch (error: any) {
+            return { success: false, error: error.message };
+        }
+    }, {
+        detail: {
+            tags: ['Events'],
+            summary: '[ADMIN/STAFF] My Managed Events',
+            description: 'Get list of events created by the logged-in user.',
+            responses: {
+                200: {
+                    description: 'List of owned events',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                example: {
+                                    success: true,
+                                    data: [{ id: "evt_1", title: "My Event" }]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    })
+
+    /**
+     * GET /events/me/tickets
+     * List My Tickets
+     */
+    .get('/me/tickets', async ({ headers, jwt }: any) => {
+        try {
+            const authHeader = headers.authorization;
+            if (!authHeader || !authHeader.startsWith('Bearer ')) throw new Error('Unauthorized');
+            const token = authHeader.replace('Bearer ', '');
+            const payload = await jwt.verify(token);
+            if (!payload) throw new Error('Invalid Token');
+
+            const data = await eventsService.getMyTickets(payload.userId);
+            return { success: true, data };
+        } catch (error: any) {
+            return { success: false, error: error.message };
+        }
+    }, {
+        detail: {
+            tags: ['Events'],
+            summary: '[USER] My Tickets',
+            description: 'Get list of events registered by the logged-in user.',
+            responses: {
+                200: {
+                    description: 'List of tickets',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                example: {
+                                    success: true,
+                                    data: [{ event: { title: "Seminar A" }, qrToken: "xyz" }]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    })
+
+    /**
      * GET /events/:id
      * Event Detail
      */
@@ -246,6 +328,52 @@ export const eventsController = new Elysia({ prefix: '/events' })
                                 example: {
                                     success: true,
                                     data: { id: "evt_new_1", title: "New Event" }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    })
+
+    /**
+     * GET /events/:id/registrants
+     * List registrants (For Verification)
+     */
+    .get('/:id/registrants', async ({ params, headers, jwt }: any) => {
+        try {
+            const authHeader = headers.authorization;
+            if (!authHeader || !authHeader.startsWith('Bearer ')) throw new Error('Unauthorized');
+            const token = authHeader.replace('Bearer ', '');
+            const payload = await jwt.verify(token);
+            if (!payload) throw new Error('Invalid Token');
+
+            // Role Check: Admin/Staff only
+            if (!['admin', 'dosen', 'staff'].includes(payload.role)) {
+                throw new Error('Forbidden');
+            }
+
+            const data = await eventsService.getRegistrants(params.id);
+            return { success: true, data };
+        } catch (error: any) {
+            return { success: false, error: error.message };
+        }
+    }, {
+        detail: {
+            tags: ['Events'],
+            summary: '[ADMIN/STAFF] List Registrants',
+            description: 'Get list of users registered to an event. Used for verifying payments.',
+            responses: {
+                200: {
+                    description: 'List of registrants',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                example: {
+                                    success: true,
+                                    data: [{ user: { fullName: "Budi" }, paymentStatus: "pending", paymentProof: "/img.jpg" }]
                                 }
                             }
                         }
