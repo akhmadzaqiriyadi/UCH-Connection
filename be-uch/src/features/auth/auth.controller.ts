@@ -43,9 +43,9 @@ export const authController = new Elysia({ prefix: '/auth' })
     }
   }, {
     body: t.Object({
-      email: t.String({ format: 'email' }),
-      password: t.String({ minLength: 6 }),
-      fullName: t.String({ minLength: 3 }),
+      email: t.String(),
+      password: t.String(),
+      fullName: t.String(),
       role: t.String(),
     }),
     response: {
