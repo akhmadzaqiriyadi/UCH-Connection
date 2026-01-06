@@ -18,6 +18,7 @@ export const authController = new Elysia({ prefix: '/auth' })
    */
   .post('/register', async ({ body, jwt }) => {
     try {
+      console.log('Register Body:', body);
       const result = await authService.register(body as any);
       
       // Sign access token with JWT
@@ -41,70 +42,6 @@ export const authController = new Elysia({ prefix: '/auth' })
         error: error.message,
       };
     }
-  }, {
-    body: t.Object({
-      email: t.String(),
-      password: t.String(),
-      fullName: t.String(),
-      role: t.String(),
-    }),
-    response: {
-      200: t.Object({
-        success: t.Boolean(),
-        data: t.Optional(t.Object({
-          user: t.Object({
-            id: t.String(),
-            email: t.String(),
-            fullName: t.String(),
-            role: t.String(),
-            mahasiswa: t.Optional(t.Any()),
-            dosen: t.Optional(t.Any()),
-          }),
-          accessToken: t.String(),
-          refreshToken: t.String(),
-        })),
-        error: t.Optional(t.String()),
-      }),
-    },
-    detail: {
-      tags: ['auth'],
-      summary: 'Register new user',
-      description: 'Create a new user account. Password must be at least 6 characters.',
-      responses: {
-        200: {
-          description: 'Successful registration',
-          content: {
-            'application/json': {
-              examples: {
-                success: {
-                  summary: 'Successful registration',
-                  value: {
-                    success: true,
-                    data: {
-                      user: {
-                        id: '550e8400-e29b-41d4-a716-446655440000',
-                        email: 'john.doe@uch.ac.id',
-                        fullName: 'John Doe',
-                        role: 'mahasiswa',
-                      },
-                      accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
-                      refreshToken: '7c6f1c2445c2683463be14a63e0175bc...',
-                    },
-                  },
-                },
-                error: {
-                  summary: 'Registration failed',
-                  value: {
-                    success: false,
-                    error: 'Email already registered',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
   })
 
   /**
