@@ -18,7 +18,7 @@ export const authController = new Elysia({ prefix: '/auth' })
    */
   .post('/register', async ({ body, jwt }) => {
     try {
-      const result = await authService.register(body);
+      const result = await authService.register(body as any);
       
       // Sign access token with JWT
       const accessToken = await jwt.sign({
@@ -46,12 +46,7 @@ export const authController = new Elysia({ prefix: '/auth' })
       email: t.String({ format: 'email' }),
       password: t.String({ minLength: 6 }),
       fullName: t.String({ minLength: 3 }),
-      role: t.Union([
-        t.Literal('mahasiswa'),
-        t.Literal('dosen'),
-        t.Literal('staff'),
-        t.Literal('user'),
-      ]),
+      role: t.String(),
     }),
     response: {
       200: t.Object({
@@ -62,6 +57,8 @@ export const authController = new Elysia({ prefix: '/auth' })
             email: t.String(),
             fullName: t.String(),
             role: t.String(),
+            mahasiswa: t.Optional(t.Any()),
+            dosen: t.Optional(t.Any()),
           }),
           accessToken: t.String(),
           refreshToken: t.String(),
@@ -152,6 +149,8 @@ export const authController = new Elysia({ prefix: '/auth' })
             email: t.String(),
             fullName: t.String(),
             role: t.String(),
+            mahasiswa: t.Optional(t.Any()),
+            dosen: t.Optional(t.Any()),
           }),
           accessToken: t.String(),
           refreshToken: t.String(),
