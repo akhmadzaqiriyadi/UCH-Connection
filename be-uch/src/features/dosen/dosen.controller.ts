@@ -121,6 +121,7 @@ export const dosenController = new Elysia({ prefix: '/dosen' })
       set.status = 201;
       return { success: true, data: newDosen };
     } catch (error: any) {
+      console.error('Create Dosen Error:', error);
       set.status = 400;
       return { success: false, message: error.message || 'Failed to create dosen' };
     }
@@ -133,6 +134,7 @@ export const dosenController = new Elysia({ prefix: '/dosen' })
       fakultasId: t.String(),
       jabatan: t.Optional(t.String()),
       noHp: t.Optional(t.String()),
+      existingUserId: t.Optional(t.String()),
     }),
     detail: {
       tags: ['Dosen'],

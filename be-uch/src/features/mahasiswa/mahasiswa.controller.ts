@@ -123,6 +123,7 @@ export const mahasiswaController = new Elysia({ prefix: '/mahasiswa' })
       set.status = 201;
       return { success: true, data: newMhs };
     } catch (error: any) {
+      console.error('Create Mahasiswa Error:', error);
       set.status = 400;
       return { success: false, message: error.message || 'Failed to create mahasiswa' };
     }
@@ -135,6 +136,7 @@ export const mahasiswaController = new Elysia({ prefix: '/mahasiswa' })
       prodiId: t.String(),
       angkatan: t.Number(),
       noHp: t.Optional(t.String()),
+      existingUserId: t.Optional(t.String()),
     }),
     detail: {
       tags: ['Mahasiswa'],
