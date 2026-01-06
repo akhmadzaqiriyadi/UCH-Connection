@@ -1,8 +1,13 @@
 #!/bin/bash
 
-BASE_URL="https://dev-apps.utycreative.cloud/api"
-ADMIN_EMAIL="admin@uty.ac.id"
-ADMIN_PASSWORD="password123"
+# Load test credentials from environment
+if [ -f .env.test ]; then
+    source .env.test
+fi
+
+ADMIN_EMAIL="${ADMIN_EMAIL:-admin@uty.ac.id}"
+ADMIN_PASSWORD="${ADMIN_PASSWORD:-password123}"
+BASE_URL="${BASE_URL:-https://dev-apps.utycreative.cloud/api}"
 
 # Colors
 GREEN='\033[0;32m'
