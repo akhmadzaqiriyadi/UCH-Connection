@@ -38,9 +38,11 @@ export const authController = new Elysia({ prefix: '/auth' })
         _debug: 'validation-bypassed-any',
       };
     } catch (error: any) {
+      console.error('Registration Error:', error);
       return {
         success: false,
         error: error.message,
+        details: error,
       };
     }
   }, {
