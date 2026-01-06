@@ -1,0 +1,417 @@
+import { Elysia, t } from 'elysia';
+import { bookingService } from './bookings.service.ts';
+import { authMiddleware, requireRole } from '../../middlewares/auth.middleware.ts';
+
+export const bookingsController = new Elysia({ prefix: '/bookings' })
+  // .use(authMiddleware) -- Moved auth to specific routes or sub-groups if needed.
+  // Actually, standard practice: Public routes first, then auth group.
+  
+  /**
+   * GET /bookings/schedule/:ruanganId
+   * Public: Check room schedule
+   */
+  .get('/schedule/:ruanganId', async ({ params, query }) => {
+    try {
+        const date = query.date ? new Date(query.date) : new Date();
+        const schedule = await bookingService.getRoomSchedule(params.ruanganId, date, date);
+        return { success: true, data: schedule };
+    } catch (error: any) {
+        return { success: false, error: error.message };
+    }
+  }, {
+    query: t.Object({
+        date: t.Optional(t.String()) // YYYY-MM-DD
+    }),
+    detail: {
+      tags: ['Bookings'],
+      summary: 'Public: Room Schedule',
+      description: 'Get list of approved bookings for calendar view',
+      responses: {
+        200: {
+          description: 'Schedule List',
+          content: {
+            'application/json': {
+              examples: {
+                success: {
+                    summary: 'Success',
+                    value: {
+                        success: true,
+                        data: [
+                            {
+                                id: '123-abc',
+                                title: 'Booked',
+                                start: '2026-01-05T09:00:00.000Z',
+                                end: '2026-01-05T11:00:00.000Z',
+                                status: 'approved',
+                                organizer: 'John Doe'
+                            }
+                        ]
+                    }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  })
+
+  /**
+   * GET /bookings/check-availability
+   * Public: Check specific slot availability
+   */
+  .get('/check-availability', async ({ query }) => {
+      try {
+          const start = new Date(query.startTime);
+          const end = new Date(query.endTime);
+          
+          if (isNaN(start.getTime()) || isNaN(end.getTime())) throw new Error('Invalid dates');
+          
+          const isAvailable = await bookingService.checkAvailability(query.ruanganId, start, end);
+          
+          // Check operating hours warning
+          const isStandardHours = bookingService.isWithinOperatingHours(start, end);
+
+          return { 
+              success: true, 
+              available: isAvailable, 
+              isStandardHours,
+              message: isAvailable 
+                ? (isStandardHours ? 'Available' : 'Available (Outside Standard Hours 08:00-16:00)')
+                : 'Not Available'
+          };
+      } catch (error: any) {
+          return { success: false, error: error.message };
+      }
+  }, {
+      query: t.Object({
+          ruanganId: t.String(),
+          startTime: t.String(),
+          endTime: t.String()
+      }),
+      detail: {
+      tags: ['Bookings'],
+      summary: 'Public: Check Availability Slot',
+      description: 'Check if a specific time range is available',
+      responses: {
+        200: {
+          description: 'Availability Result',
+          content: {
+            'application/json': {
+              examples: {
+                available: {
+                    summary: 'Available (Standard)',
+                    value: {
+                        success: true,
+                        available: true,
+                        isStandardHours: true,
+                        message: 'Available'
+                    }
+                },
+                blocked: {
+                    summary: 'Not Available',
+                    value: {
+                        success: true,
+                        available: false,
+                        isStandardHours: true,
+                        message: 'Not Available'
+                    }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  })
+
+  /**
+   * GET /bookings/slots
+   * Public: Get available time slots for dropdown
+   */
+  .get('/slots', async ({ query }) => {
+      try {
+          const date = new Date(query.date); // YYYY-MM-DD
+          const duration = query.duration ? parseInt(query.duration) : 60; // Minutes
+          
+          if (isNaN(date.getTime())) throw new Error('Invalid date');
+
+          const slots = await bookingService.getAvailableSlots(query.ruanganId, date, duration);
+          return { success: true, data: slots };
+      } catch (error: any) {
+          return { success: false, error: error.message };
+      }
+  }, {
+      query: t.Object({
+          ruanganId: t.String(),
+          date: t.String(),
+          duration: t.Optional(t.String())
+      }),
+      detail: {
+        tags: ['Bookings'],
+        summary: 'Public: Get Available Slots Dropdown',
+        description: 'Get clean list of available start times for a given duration. Filters out blocked slots.',
+        responses: {
+            200: {
+                description: 'List of Time Slots',
+                content: {
+                    'application/json': {
+                        examples: {
+                            success: {
+                                summary: 'Slots List',
+                                value: {
+                                    success: true,
+                                    data: [
+                                        { time: '08.00', available: true },
+                                        { time: '09.00', available: true },
+                                        { time: '13.00', available: true }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+      }
+  })
+
+    // Protected Routes (User)
+    // We chain middleware directly to ensure execution context is preserved
+    .use(authMiddleware)
+    
+    /**
+     * GET /bookings
+     * My Bookings
+     */
+    .get('/', async ({ user }: any) => {
+        try {
+            const data = await bookingService.findAll({ userId: user.userId });
+            return { success: true, data };
+        } catch (error: any) {
+            return { success: false, error: error.message };
+        }
+    }, {
+        detail: {
+            tags: ['Bookings'],
+            summary: 'My Bookings',
+            description: 'Get list of bookings created by current user',
+            responses: {
+                200: {
+                    description: 'User Bookings',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                example: {
+                                    success: true,
+                                    data: [
+                                        {
+                                            id: "bk_123",
+                                            title: "Rapat Himpunan",
+                                            start: "2026-06-01T08:00:00.000Z",
+                                            end: "2026-06-01T10:00:00.000Z",
+                                            status: "pending",
+                                            ruangan: { nama: "Meeting Room A" }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    })
+
+    /**
+     * POST /bookings
+     * Create Booking Request
+     */
+    .post('/', async ({ body, headers, jwt }: any) => {
+        try {
+            const authHeader = headers.authorization;
+            if (!authHeader || !authHeader.startsWith('Bearer ')) {
+                throw new Error('Unauthorized');
+            }
+            const token = authHeader.replace('Bearer ', '');
+            const payload = await jwt.verify(token);
+
+            if (!payload) throw new Error('Invalid Token');
+            
+            const data = await bookingService.create(payload.userId as string, body);
+            return { success: true, data };
+        } catch (error: any) {
+            return { success: false, error: error.message };
+        }
+    }, {
+        body: t.Object({
+            ruanganId: t.String(),
+            purpose: t.String(),
+            audienceCount: t.Number(),
+            startTime: t.String(),
+            endTime: t.String()
+        }),
+        detail: {
+            tags: ['Bookings'],
+            summary: 'Request Booking',
+            description: 'Submit a new room booking request',
+            responses: {
+                201: {
+                    description: 'Booking Created',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                example: {
+                                    success: true,
+                                    data: {
+                                        id: "bk_new_1",
+                                        status: "pending",
+                                        message: "Booking submitted successfully"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    })
+
+  // Admin Routes
+  .group('/manage', app => app
+    .use(requireRole('admin'))
+
+    /**
+     * GET /bookings/manage
+     * List All Bookings (Admin)
+     */
+    .get('/', async () => {
+        const data = await bookingService.findAll({ isAdmin: true });
+        return { success: true, data };
+    }, {
+        detail: { 
+            tags: ['Bookings'], 
+            summary: 'List All Bookings (Admin)',
+            responses: {
+                200: {
+                    description: 'All Bookings',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                example: {
+                                    success: true,
+                                    data: [
+                                        { id: "bk_1", user: { fullName: "User A" }, status: "pending" },
+                                        { id: "bk_2", user: { fullName: "User B" }, status: "approved" }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    })
+
+    /**
+     * POST /bookings/manage/:id/process
+     * Approve or Reject Booking
+     */
+    .post('/:id/process', async ({ params, body }) => {
+      try {
+        const data = await bookingService.processBooking(params.id, body);
+        return { success: true, data };
+      } catch (error: any) {
+        return { success: false, error: error.message };
+      }
+    }, {
+      body: t.Object({
+        status: t.Union([t.Literal('approved'), t.Literal('rejected'), t.Literal('cancelled')]),
+        rejectionReason: t.Optional(t.String())
+      }),
+      detail: {
+        tags: ['Bookings'],
+        summary: 'Process Booking (Approve/Reject)',
+        description: 'Admin action to approve/reject booking',
+        responses: {
+          200: {
+            description: 'Booking Processed',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  example: {
+                    success: true,
+                    data: {
+                      id: "bk_123",
+                      userId: "user_456",
+                      ruanganId: "room_789",
+                      purpose: "Meeting Proyek Akhir",
+                      audienceCount: 15,
+                      startTime: "2026-02-10T09:00:00.000Z",
+                      endTime: "2026-02-10T11:00:00.000Z",
+                      status: "approved",
+                      qrToken: "qr-uuid-generated-abc123",
+                      rejectionReason: null,
+                      createdAt: "2026-01-05T08:00:00.000Z",
+                      updatedAt: "2026-01-05T10:30:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    })
+
+    /**
+     * POST /bookings/manage/checkin
+     * Validate QR and Check-in
+     */
+    .post('/checkin', async ({ body, user }: any) => {
+      try {
+        const result = await bookingService.checkIn(body.qrToken, user.userId);
+        return { success: true, data: result };
+      } catch (error: any) {
+        return { success: false, error: error.message };
+      }
+    }, {
+      body: t.Object({
+        qrToken: t.String()
+      }),
+      detail: {
+        tags: ['Bookings'],
+        summary: 'Check-in User (Scan QR)',
+        description: 'Update status to checked_in using QR Token',
+        responses: {
+          200: {
+            description: 'Check-in Successful',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  example: {
+                    success: true,
+                    data: {
+                      success: true,
+                      message: "Check-in successful",
+                      booking: {
+                        id: "bk_123",
+                        user: "Budi Santoso",
+                        room: "Meeting Room A",
+                        time: "2026-02-10T09:00:00.000Z"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    })
+  );
